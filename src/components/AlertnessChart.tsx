@@ -32,26 +32,26 @@ function CustomTooltip({ active, payload }: TooltipProps<number, string>) {
         return (
             <div className="bg-white p-3 rounded-lg shadow-lg border border-gray-100 text-xs z-50">
                 <p className="font-bold mb-1">{data.time}</p>
-                <div className="flex flex-col gap-1">
-                    <p className="flex justify-between w-32">
-                        <span>Current:</span>
-                        <span className="font-bold">{data.total.toFixed(0)}</span>
-                    </p>
-                    <p className="flex justify-between w-32 text-gray-400">
+                <div className="flex flex-col gap-2">
+                    <div className="flex justify-between w-32 items-center">
+                        <span className="text-gray-500">Current:</span>
+                        <span className="font-bold text-lg">{data.total.toFixed(0)}</span>
+                    </div>
+                    <div className="flex justify-between w-32 items-center text-gray-400">
                         <span>Baseline:</span>
                         <span>{data.baseline.toFixed(0)}</span>
-                    </p>
+                    </div>
                     {data.caffeine > 0 && (
-                        <p className="flex justify-between w-32 text-green-600">
+                        <div className="flex justify-between w-32 items-center text-green-600">
                             <span>Boost:</span>
                             <span>+{data.caffeine.toFixed(0)}</span>
-                        </p>
+                        </div>
                     )}
                     {(data as any).predictedTotal > data.total && (
-                        <p className="flex justify-between w-32 text-blue-500">
+                        <div className="flex justify-between w-32 items-center text-blue-500">
                             <span>Predicted:</span>
                             <span>{(data as any).predictedTotal.toFixed(0)}</span>
-                        </p>
+                        </div>
                     )}
                 </div>
             </div>
@@ -179,21 +179,28 @@ export default function AlertnessChart({
                     />
 
                     {/* Intake Markers - Snap to grid to match XAxis */}
-                    {intakeRecords.map((record, idx) => (
-                        <ReferenceLine
-                            key={idx}
-                            x={snapToGrid(record.time)}
-                            stroke="#171717"
-                            strokeDasharray="3 3"
-                            label={{
-                                value: '☕',
-                                position: 'insideTop',
-                                dy: 20, // Push down to avoid overlapping with NOW label or specific time
-                                fontSize: 16,
-                                fill: '#171717'
-                            }}
-                        />
-                    ))}
+                    {intakeRecords.map((record, idx) => {
+                        const snappedTime = snapToGrid(record.time);
+                        // Only render if the snapped time exists in the data to avoid rendering issues
+                        const isInRange = data.some(d => d.time === snappedTime);
+                        if (!isInRange) return null;
+
+                        return (
+                            <ReferenceLine
+                                key={idx}
+                                x={snappedTime}
+                                stroke="#171717"
+                                strokeDasharray="3 3"
+                                label={{
+                                    value: '☕',
+                                    position: 'insideTop',
+                                    dy: 20, // Push down
+                                    fontSize: 16,
+                                    fill: '#171717'
+                                }}
+                            />
+                        );
+                    })}
 
                     {/* Date Transition Line (00:00) */}
                     {data.map((point, idx) => {

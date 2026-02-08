@@ -59,13 +59,11 @@ export default function ConfirmDialog({
                                 onConfirm();
                                 onClose();
                             }}
-                            className={`py-3 px-4 rounded-xl font-bold text-sm text-white transition-all shadow-md active:scale-95 flex items-center justify-center gap-2 ${isDestructive
-                                    ? 'bg-red-500 hover:bg-red-600 shadow-red-200'
-                                    : 'bg-black hover:bg-gray-800 shadow-gray-200'
-                                }`}
+                            className={`btn-primary ${isDestructive ? 'bg-red-500 shadow-red-200' : ''}`}
+                            style={isDestructive ? { background: '#EF4444', boxShadow: '0 4px 12px rgba(239, 68, 68, 0.3)' } : {}}
                         >
-                            {isDestructive && <X size={16} />}
-                            {!isDestructive && <Check size={16} />}
+                            {isDestructive && <X size={18} />}
+                            {!isDestructive && <Check size={18} />}
                             <span>{t('confirm')}</span>
                         </button>
                     </div>

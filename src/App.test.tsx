@@ -1,9 +1,7 @@
 
 import { describe, it, expect, beforeEach, vi } from 'vitest';
 import { render, screen, fireEvent } from '@testing-library/react';
-// We need to make sure we import React for JSX to work if not using new transform, but vite handles it.
 import App from './App';
-import * as React from 'react';
 
 // Mock translations
 vi.mock('react-i18next', () => ({
@@ -44,7 +42,7 @@ const localStorageMock = (function () {
             delete store[key];
         },
         length: 0,
-        key: (index: number) => null,
+        key: (_index: number) => null,
     };
 })();
 

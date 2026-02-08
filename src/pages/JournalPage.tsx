@@ -15,24 +15,25 @@ export default function JournalPage() {
     const totalCaffeine = todayRecords.reduce((sum, record) => sum + record.amount, 0);
 
     return (
-        <div className="page journal-page pb-20">
+        <div className="page journal-page pb-20 flex flex-col relative h-full">
             {/* Header / Summary - Sticky */}
             <div
-                className="mb-8 p-6 bg-white rounded-2xl shadow-sm border border-gray-100 flex items-center justify-between"
+                className="mb-8 p-4 bg-white rounded-2xl shadow-sm border border-gray-100 flex items-center justify-between"
                 style={{
                     position: 'sticky',
-                    top: 'calc(var(--header-height) + env(safe-area-inset-top, 0px))',
+                    top: 'calc(var(--header-height) + env(safe-area-inset-top, 0px) + 0.5rem)',
                     zIndex: 40,
-                    backgroundColor: 'var(--bg-card)'
+                    backgroundColor: 'var(--bg-card)',
+                    maxWidth: '100%'
                 }}
             >
-                <div className="flex flex-col justify-center">
+                <div className="flex flex-col justify-center whitespace-nowrap">
                     <h2 className="text-xs font-bold text-gray-400 tracking-widest uppercase mb-1">{t('journal.totalIntake')}</h2>
                     <p className="text-4xl font-light leading-none flex items-baseline">
                         {totalCaffeine}<span className="text-sm text-gray-400 ml-1">mg</span>
                     </p>
                 </div>
-                <div className="p-3 bg-gray-50 rounded-full flex items-center justify-center">
+                <div className="p-3 bg-gray-50 rounded-full flex items-center justify-center flex-shrink-0 ml-4">
                     <Coffee size={24} className="text-gray-800" />
                 </div>
             </div>
@@ -50,9 +51,10 @@ export default function JournalPage() {
 
                             <button
                                 onClick={() => setShowIntakeModal(true)}
-                                className="flex items-center gap-2 px-6 py-3 bg-black text-white rounded-full font-bold text-sm shadow-lg hover:scale-105 active:scale-95 transition-transform"
+                                className="btn-primary"
+                                style={{ maxWidth: '200px' }}
                             >
-                                <PlusCircle size={18} />
+                                <PlusCircle size={20} strokeWidth={2.5} />
                                 <span>{t('intake.record')}</span>
                             </button>
                         </div>

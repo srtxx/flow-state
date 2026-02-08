@@ -1,5 +1,5 @@
 import { useTranslation } from 'react-i18next';
-import { Clock, Moon, TrendingUp, Settings, Coffee, Heart } from 'lucide-react';
+import { Clock, Moon, TrendingUp, TrendingDown, Minus, Settings, Coffee, Heart } from 'lucide-react';
 import { useFlowState } from '../context/FlowStateContext';
 
 export default function ProfilePage() {
@@ -9,11 +9,39 @@ export default function ProfilePage() {
         actualSleepHours,
         avoidAfterTime,
         setShowSleepInput,
-        showToast
+        showToast,
+        weeklyStats
     } = useFlowState();
 
     const onSleepClick = () => setShowSleepInput(true);
     const isSleepSufficient = actualSleepHours >= sleepData.avgSleepHours - 1;
+
+    // Determine trend icon and color
+    const getTrendDisplay = (change: number | null) => {
+        if (change === null) return null;
+        
+        if (change > 0) {
+            return {
+                icon: <TrendingUp size={12} />,
+                color: 'text-green-600',
+                text: `+${change}`
+            };
+        } else if (change < 0) {
+            return {
+                icon: <TrendingDown size={12} />,
+                color: 'text-red-600',
+                text: `${change}`
+            };
+        } else {
+            return {
+                icon: <Minus size={12} />,
+                color: 'text-gray-400',
+                text: '0'
+            };
+        }
+    };
+
+    const trendDisplay = getTrendDisplay(weeklyStats.weeklyChange);
 
     return (
         <div className="page profile-page pb-24 pt-8">
@@ -99,18 +127,38 @@ export default function ProfilePage() {
                 <div className="grid grid-cols-2 gap-4">
                     <div className="card-soft p-4">
                         <p className="text-xs text-secondary mb-2">{t('profile.avgAlertness')}</p>
-                        <p className="text-2xl font-semibold">84</p>
-                        <div className="flex items-center gap-1 text-green-600 text-xs mt-2 font-medium">
-                            <TrendingUp size={12} />
-                            <span>+5%</span>
-                        </div>
+                        {weeklyStats.thisWeekAvg !== null ? (
+                            <>
+                                <p className="text-2xl font-semibold">{weeklyStats.thisWeekAvg}</p>
+                                {trendDisplay && (
+                                    <div className={`flex items-center gap-1 text-xs mt-2 font-medium ${trendDisplay.color}`}>
+                                        {trendDisplay.icon}
+                                        <span>{trendDisplay.text}</span>
+                                    </div>
+                                )}
+                            </>
+                        ) : (
+                            <div className="text-sm text-secondary mt-2">
+                                <p>データ不足</p>
+                                <p className="text-xs mt-1">数日使用すると表示されます</p>
+                            </div>
+                        )}
                     </div>
                     <div className="card-soft p-4">
                         <p className="text-xs text-secondary mb-2">{t('profile.avgSleep')}</p>
-                        <p className="text-2xl font-semibold">7.2<span className="text-sm text-secondary ml-1">h</span></p>
-                        <div className="flex items-center gap-1 text-gray-400 text-xs mt-2">
-                            <span>Stable</span>
-                        </div>
+                        {weeklyStats.daysTracked > 0 ? (
+                            <>
+                                <p className="text-2xl font-semibold">{actualSleepHours.toFixed(1)}<span className="text-sm text-secondary ml-1">h</span></p>
+                                <div className="flex items-center gap-1 text-gray-400 text-xs mt-2">
+                                    <span>{weeklyStats.daysTracked}日間追跡中</span>
+                                </div>
+                            </>
+                        ) : (
+                            <div className="text-sm text-secondary mt-2">
+                                <p>データ不足</p>
+                                <p className="text-xs mt-1">数日使用すると表示されます</p>
+                            </div>
+                        )}
                     </div>
                 </div>
             </div>
