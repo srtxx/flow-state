@@ -1,0 +1,73 @@
+import { useEffect } from 'react';
+import { X, Check, AlertCircle } from 'lucide-react';
+
+export interface ToastData {
+    id: string;
+    message: string;
+    type: 'success' | 'error' | 'info';
+}
+
+interface ToastProps {
+    toast: ToastData;
+    onDismiss: (id: string) => void;
+}
+
+function Toast({ toast, onDismiss }: ToastProps) {
+    useEffect(() => {
+        const timer = setTimeout(() => {
+            onDismiss(toast.id);
+        }, 3000);
+        return () => clearTimeout(timer);
+    }, [toast.id, onDismiss]);
+
+    const bgColor = toast.type === 'success'
+        ? 'bg-white/90 border-green-100 text-green-800'
+        : toast.type === 'error'
+            ? 'bg-white/90 border-red-100 text-red-800'
+            : 'bg-white/90 border-blue-100 text-blue-800';
+
+    const iconColor = toast.type === 'success'
+        ? 'text-green-500'
+        : toast.type === 'error'
+            ? 'text-red-500'
+            : 'text-blue-500';
+
+    const Icon = toast.type === 'success' ? Check : toast.type === 'error' ? AlertCircle : AlertCircle;
+
+    return (
+        <div
+            className={`toast-item flex items-center gap-3 px-5 py-4 rounded-2xl border shadow-2xl backdrop-blur-md ${bgColor}`}
+            style={{
+                animation: 'slideIn 0.3s cubic-bezier(0.16, 1, 0.3, 1)'
+            }}
+        >
+            <Icon size={20} className={iconColor} strokeWidth={2.5} />
+            <span className="text-sm font-bold tracking-wide flex-1">{toast.message}</span>
+            <button
+                onClick={() => onDismiss(toast.id)}
+                className="ml-2 text-gray-400 hover:text-gray-600 transition-colors bg-transparent p-1 rounded-full hover:bg-black/5"
+            >
+                <X size={16} />
+            </button>
+        </div>
+    );
+}
+
+interface ToastContainerProps {
+    toasts: ToastData[];
+    onDismiss: (id: string) => void;
+}
+
+export default function ToastContainer({ toasts, onDismiss }: ToastContainerProps) {
+    return (
+        <div
+            className="toast-container fixed top-6 left-1/2 transform -translate-x-1/2 z-[300] flex flex-col gap-3 w-full max-w-[90%] sm:max-w-sm pointer-events-none"
+        >
+            <div className="flex flex-col gap-3 pointer-events-auto">
+                {toasts.map(toast => (
+                    <Toast key={toast.id} toast={toast} onDismiss={onDismiss} />
+                ))}
+            </div>
+        </div>
+    );
+}
