@@ -18,22 +18,22 @@ export default function JournalPage() {
         <div className="page journal-page pb-20 flex flex-col relative h-full">
             {/* Header / Summary - Sticky */}
             <div
-                className="mb-8 p-4 bg-white rounded-2xl shadow-sm border border-gray-100 flex items-center justify-between"
+                className="journal-summary-card mb-8 p-4 bg-white rounded-2xl shadow-sm border border-gray-100 flex items-center justify-between"
                 style={{
                     position: 'sticky',
-                    top: 'calc(var(--header-height) + env(safe-area-inset-top, 0px) + 0.5rem)',
+                    top: 'calc(60px + env(safe-area-inset-top, 0px) + 0.5rem)',
                     zIndex: 40,
                     backgroundColor: 'var(--bg-card)',
                     maxWidth: '100%'
                 }}
             >
-                <div className="flex flex-col justify-center whitespace-nowrap">
+                <div className="flex flex-col justify-center min-w-0 flex-1">
                     <h2 className="text-xs font-bold text-gray-400 tracking-widest uppercase mb-1">{t('journal.totalIntake')}</h2>
                     <p className="text-4xl font-light leading-none flex items-baseline">
                         {totalCaffeine}<span className="text-sm text-gray-400 ml-1">mg</span>
                     </p>
                 </div>
-                <div className="p-3 bg-gray-50 rounded-full flex items-center justify-center flex-shrink-0 ml-4">
+                <div className="p-3 bg-gray-50 rounded-full flex items-center justify-center flex-shrink-0 ml-2">
                     <Coffee size={24} className="text-gray-800" />
                 </div>
             </div>
@@ -65,13 +65,14 @@ export default function JournalPage() {
                                     <p className="item-title text-base font-medium">{record.time}</p>
                                     <p className="item-subtitle text-xs uppercase tracking-wide text-gray-500">{record.drink}</p>
                                 </div>
-                                <div className="flex items-center gap-4">
+                                <div className="flex items-center gap-2">
                                     <div className="text-right">
                                         <p className="text-xl font-light leading-none">{record.amount}</p>
                                         <p className="text-xs text-secondary text-right">mg</p>
                                     </div>
                                     <button
-                                        className="btn-ghost p-2 text-secondary hover:text-red-500 transition-colors"
+                                        className="btn-ghost p-3 text-secondary hover:text-red-500 transition-colors"
+                                        style={{ minWidth: '44px', minHeight: '44px' }}
                                         onClick={() => deleteIntake(record.id)}
                                         aria-label={t('delete')}
                                     >

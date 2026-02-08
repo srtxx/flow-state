@@ -181,25 +181,25 @@ body {
 .bottom-nav {
   position: fixed;
   bottom: calc(1.5rem + env(safe-area-inset-bottom));
-  /* Lift slightly more */
   left: 50%;
   transform: translateX(-50%);
   width: auto;
-  /* Hug content */
-  min-width: 280px;
-  max-width: calc(100% - 3rem);
+  min-width: min(280px, calc(100% - 2rem));
+  /* Responsive min-width */
+  max-width: calc(100% - 2rem);
+  /* Reduced margin for small screens */
   background: rgba(23, 23, 23, 0.85);
-  /* Darker, sophisticated */
   backdrop-filter: blur(20px);
   -webkit-backdrop-filter: blur(20px);
-  padding: 0.75rem 1.5rem;
+  padding: 0.75rem clamp(1rem, 3vw, 1.5rem);
+  /* Responsive padding */
   border-radius: var(--radius-full);
   display: flex;
   justify-content: space-between;
   align-items: center;
-  gap: 1.5rem;
+  gap: clamp(1rem, 3vw, 1.5rem);
+  /* Responsive gap */
   box-shadow: 0 20px 40px -10px rgba(0, 0, 0, 0.3);
-  /* Deep floating shadow */
   z-index: 100;
   border: 1px solid rgba(255, 255, 255, 0.1);
 }
@@ -245,15 +245,14 @@ body {
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  padding: 2rem 0;
-  /* Reduced padding for mobile */
+  padding: 1.5rem 0;
   position: relative;
 }
 
 /* Circular ring or just clean text? Let's go clean text for now with big soft shadow */
 .score-value-large {
-  font-size: 5.5rem;
-  /* Slightly smaller for mobile safety */
+  font-size: clamp(4rem, 12vw, 5.5rem);
+  /* Responsive font size for small devices */
   font-weight: 800;
   line-height: 1;
   letter-spacing: -0.05em;
@@ -299,7 +298,8 @@ body {
 .main-chart-container {
   margin: 1rem 0;
   padding: 0;
-  height: 280px;
+  height: clamp(220px, 40vh, 320px);
+  /* Responsive height */
   width: 100%;
   max-width: 100%;
   overflow: hidden;
@@ -314,13 +314,12 @@ body {
 /* FAB */
 .fab-button {
   position: fixed;
-  bottom: calc(var(--bottom-nav-height) + 2rem + env(safe-area-inset-bottom));
-  right: 1.5rem;
+  bottom: calc(6rem + env(safe-area-inset-bottom));
+  /* Simplified calculation */
+  right: clamp(1rem, 3vw, 1.5rem);
   width: 60px;
-  /* Larger for better touch */
   height: 60px;
   border-radius: 20px;
-  /* Squircle */
   background: var(--bg-card);
   color: var(--text-primary);
   display: flex;
@@ -525,13 +524,16 @@ body {
   max-width: var(--max-width);
   background: var(--bg-card);
   border-radius: var(--radius-lg) var(--radius-lg) 0 0;
-  padding: 2rem;
-  padding: 2rem;
-  padding-bottom: calc(2rem + env(safe-area-inset-bottom));
+  padding: clamp(1.5rem, 4vw, 2rem);
+  /* Responsive padding */
+  padding-bottom: calc(clamp(1.5rem, 4vw, 2rem) + env(safe-area-inset-bottom));
   box-shadow: var(--shadow-floating);
   animation: slideUp 0.3s cubic-bezier(0.16, 1, 0.3, 1);
-  max-height: 90dvh;
+  max-height: 85dvh;
+  /* Reduced for better mobile experience */
   overflow-y: auto;
+  overflow-x: hidden;
+  /* Prevent horizontal scroll */
 }
 
 @keyframes slideUp {
@@ -653,6 +655,38 @@ body {
    Responsive Design
    ============================================ */
 
+/* Journal Summary Card */
+.journal-summary-card {
+  position: sticky;
+  top: calc(60px + env(safe-area-inset-top, 0px) + 0.5rem);
+  z-index: 40;
+}
+
+/* Intake Modal Grid */
+.intake-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 0.75rem;
+}
+
+/* Small devices: 360px+ */
+@media (min-width: 360px) {
+  .intake-grid {
+    gap: 1rem;
+  }
+}
+
+/* Landscape mobile: 568px+ */
+@media (min-width: 568px) and (orientation: landscape) {
+  .intake-grid {
+    grid-template-columns: repeat(3, 1fr);
+  }
+  
+  .main-chart-container {
+    height: clamp(180px, 35vh, 280px);
+  }
+}
+
 /* Tablet: 768px+ */
 @media (min-width: 768px) {
   :root {
@@ -683,6 +717,10 @@ body {
     margin: auto;
   }
 
+  .intake-grid {
+    grid-template-columns: repeat(3, 1fr);
+  }
+
   /* Journal grid - 2 columns on tablet */
   .journal-page .flex.flex-col.gap-3 {
     display: grid;
@@ -709,6 +747,33 @@ body {
 
   .bottom-nav {
     bottom: 2rem;
+  }
+  
+  .intake-grid {
+    grid-template-columns: repeat(4, 1fr);
+  }
+}
+
+/* Extra small devices: max 320px */
+@media (max-width: 320px) {
+  .score-value-large {
+    font-size: 3.5rem;
+  }
+  
+  .bottom-nav {
+    min-width: calc(100% - 1.5rem);
+    padding: 0.5rem 0.75rem;
+    gap: 0.75rem;
+  }
+  
+  .nav-label {
+    font-size: 0.65rem;
+  }
+  
+  .fab-button {
+    width: 52px;
+    height: 52px;
+    right: 1rem;
   }
 }
 

@@ -113,7 +113,7 @@ export default function IntakeModal({ isOpen, onClose, onAdd }: IntakeModalProps
                 </div>
 
                 {/* Simulation Chart */}
-                <div className="h-40 w-full mb-6">
+                <div className="h-32 w-full mb-4">
                     <AlertnessChart
                         data={alertnessData}
                         predictedData={predictedData}
@@ -143,11 +143,11 @@ export default function IntakeModal({ isOpen, onClose, onAdd }: IntakeModalProps
                 </div>
 
                 {mode === 'quick' ? (
-                    <div className="grid grid-cols-2 gap-3">
+                    <div className="intake-grid">
                         {DRINK_OPTIONS.map((drink) => (
                             <button
                                 key={drink.name}
-                                className="card-soft flex flex-col items-center justify-center gap-2 transition-all duration-150 border-2 border-transparent hover:border-gray-200 hover:shadow-md hover:scale-[1.02] active:scale-[0.98] active:border-black p-4 m-0 h-auto"
+                                className="card-soft flex flex-col items-center justify-center gap-2 transition-all duration-150 border-2 border-transparent hover:border-gray-200 hover:shadow-md hover:scale-[1.02] active:scale-[0.98] active:border-black p-4 m-0 h-auto min-h-[120px]"
                                 onClick={() => handleQuickAdd(drink.name, drink.defaultMg)}
                                 onMouseEnter={() => setSimulationParams({ amount: drink.defaultMg, time: getCurrentTimeString() })}
                                 onMouseLeave={() => setSimulationParams(undefined)}
@@ -155,7 +155,7 @@ export default function IntakeModal({ isOpen, onClose, onAdd }: IntakeModalProps
                                 <div className="p-3 bg-gray-100 rounded-full text-gray-800 mb-1 transition-colors group-hover:bg-gray-200">
                                     {getIcon(drink.name)}
                                 </div>
-                                <p className="font-bold text-sm">{drink.name}</p>
+                                <p className="font-bold text-sm text-center">{drink.name}</p>
                                 <p className="text-xs text-secondary">{drink.defaultMg}mg</p>
                             </button>
                         ))}
