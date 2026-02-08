@@ -113,7 +113,7 @@ export default function IntakeModal({ isOpen, onClose, onAdd }: IntakeModalProps
                 </div>
 
                 {/* Simulation Chart */}
-                <div className="h-32 w-full mb-4">
+                <div className="h-28 sm:h-32 w-full mb-3 sm:mb-4">
                     <AlertnessChart
                         data={alertnessData}
                         predictedData={predictedData}
@@ -123,15 +123,15 @@ export default function IntakeModal({ isOpen, onClose, onAdd }: IntakeModalProps
                 </div>
 
                 {/* Tabs */}
-                <div className="flex bg-gray-100 p-1 rounded-xl mb-6">
+                <div className="flex bg-gray-100 p-1 rounded-xl mb-5 sm:mb-6">
                     <button
-                        className={`flex-1 py-2.5 text-sm font-bold rounded-lg transition-all duration-200 ${mode === 'quick' ? 'bg-white shadow-md text-black' : 'text-gray-600 hover:text-gray-800 hover:bg-gray-50'}`}
+                        className={`flex-1 py-2 sm:py-2.5 text-xs sm:text-sm font-bold rounded-lg transition-all duration-200 ${mode === 'quick' ? 'bg-white shadow-md text-black' : 'text-gray-600 hover:text-gray-800 hover:bg-gray-50'}`}
                         onClick={() => setMode('quick')}
                     >
                         {t('intake.quickAdd')}
                     </button>
                     <button
-                        className={`flex-1 py-2.5 text-sm font-bold rounded-lg transition-all duration-200 ${mode === 'custom' ? 'bg-white shadow-md text-black' : 'text-gray-600 hover:text-gray-800 hover:bg-gray-50'}`}
+                        className={`flex-1 py-2 sm:py-2.5 text-xs sm:text-sm font-bold rounded-lg transition-all duration-200 ${mode === 'custom' ? 'bg-white shadow-md text-black' : 'text-gray-600 hover:text-gray-800 hover:bg-gray-50'}`}
                         onClick={() => {
                             setMode('custom');
                             setCustomTime(getCurrentTimeString());
@@ -147,21 +147,21 @@ export default function IntakeModal({ isOpen, onClose, onAdd }: IntakeModalProps
                         {DRINK_OPTIONS.map((drink) => (
                             <button
                                 key={drink.name}
-                                className="card-soft flex flex-col items-center justify-center gap-2 transition-all duration-150 border-2 border-transparent hover:border-gray-200 hover:shadow-md hover:scale-[1.02] active:scale-[0.98] active:border-black p-4 m-0 h-auto min-h-[120px]"
+                                className="card-soft flex flex-col items-center justify-center gap-1 sm:gap-2 transition-all duration-150 border-2 border-transparent hover:border-gray-200 hover:shadow-md hover:scale-[1.02] active:scale-[0.98] active:border-black p-3 sm:p-4 m-0 h-auto min-h-[100px] sm:min-h-[120px]"
                                 onClick={() => handleQuickAdd(drink.name, drink.defaultMg)}
                                 onMouseEnter={() => setSimulationParams({ amount: drink.defaultMg, time: getCurrentTimeString() })}
                                 onMouseLeave={() => setSimulationParams(undefined)}
                             >
-                                <div className="p-3 bg-gray-100 rounded-full text-gray-800 mb-1 transition-colors group-hover:bg-gray-200">
+                                <div className="p-2 sm:p-3 bg-gray-100 rounded-full text-gray-800 mb-1 transition-colors group-hover:bg-gray-200">
                                     {getIcon(drink.name)}
                                 </div>
-                                <p className="font-bold text-sm text-center">{drink.name}</p>
+                                <p className="font-bold text-xs sm:text-sm text-center leading-tight">{drink.name}</p>
                                 <p className="text-xs text-secondary">{drink.defaultMg}mg</p>
                             </button>
                         ))}
                     </div>
                 ) : (
-                    <div className="flex flex-col gap-4">
+                    <div className="flex flex-col gap-3 sm:gap-4">
                         <div>
                             <label className="text-xs font-bold text-secondary uppercase tracking-wider mb-2 block">
                                 {t('intake.amount')}
@@ -170,14 +170,14 @@ export default function IntakeModal({ isOpen, onClose, onAdd }: IntakeModalProps
                                 type="number"
                                 value={customAmount}
                                 onChange={(e) => handleAmountChange(e.target.value)}
-                                className={`input-soft text-2xl font-light ${error ? 'border-red-500' : ''}`}
+                                className={`input-soft text-xl sm:text-2xl font-light ${error ? 'border-red-500' : ''}`}
                                 placeholder="100"
                                 min="1"
                                 max="1000"
                                 autoFocus
                             />
                             {error && (
-                                <p className="text-red-500 text-sm mt-1">{error}</p>
+                                <p className="text-red-500 text-xs sm:text-sm mt-1">{error}</p>
                             )}
                         </div>
 
@@ -189,11 +189,11 @@ export default function IntakeModal({ isOpen, onClose, onAdd }: IntakeModalProps
                                 type="time"
                                 value={customTime}
                                 onChange={(e) => setCustomTime(e.target.value)}
-                                className="input-soft text-2xl font-light"
+                                className="input-soft text-xl sm:text-2xl font-light"
                             />
                         </div>
 
-                        <div className="flex gap-3 mt-4">
+                        <div className="flex gap-2 sm:gap-3 mt-2 sm:mt-4">
                             <button onClick={onClose} className="btn-secondary flex-1">
                                 {t('cancel')}
                             </button>
@@ -203,7 +203,7 @@ export default function IntakeModal({ isOpen, onClose, onAdd }: IntakeModalProps
                                 disabled={isSubmitDisabled}
                                 style={{ opacity: isSubmitDisabled ? 0.5 : 1, cursor: isSubmitDisabled ? 'not-allowed' : 'pointer' }}
                             >
-                                <Plus size={20} />
+                                <Plus size={18} className="sm:w-5 sm:h-5" />
                                 <span>{t('intake.record')}</span>
                             </button>
                         </div>

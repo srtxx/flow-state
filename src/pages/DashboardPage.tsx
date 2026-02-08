@@ -40,34 +40,34 @@ export default function DashboardPage() {
     return (
         <div className="dashboard-page">
             {/* Hero Section */}
-            <div className="score-display-large">
+            <div className="score-display-large px-2">
                 <span className="score-value-large">{currentAlertness}</span>
                 <span className="score-label-small">{t('dashboard.currentAlertness')}</span>
 
                 <div className="status-pill">
                     <div className="status-dot" style={{ backgroundColor: statusColor }} />
-                    <span>{statusText}</span>
+                    <span className="text-xs sm:text-sm">{statusText}</span>
                 </div>
             </div>
 
             {/* Insight / Notification (Floating Pill) */}
-            <div className="flex flex-col items-center gap-2 mb-4">
+            <div className="flex flex-col items-center gap-2 mb-4 px-2">
                 {/* Only show critical warnings or valid recommendations */}
                 {isOverLimit && (
-                    <div className="card-soft flex items-center gap-2 py-2 px-4 shadow-sm">
-                        <Bell size={14} color="var(--status-critical)" />
-                        <span className="text-sm font-bold text-secondary">制限超過 ({totalCaffeineToday}mg)</span>
+                    <div className="card-soft flex items-center gap-2 py-2 px-3 sm:px-4 shadow-sm max-w-full">
+                        <Bell size={14} color="var(--status-critical)" className="flex-shrink-0" />
+                        <span className="text-xs sm:text-sm font-bold text-secondary truncate">制限超過 ({totalCaffeineToday}mg)</span>
                     </div>
                 )}
 
                 {!isOverLimit && recommendation && showNotification && (
                     <div
-                        className="card-soft flex items-center gap-2 py-2 px-4 shadow-sm cursor-pointer"
+                        className="card-soft flex items-center gap-2 py-2 px-3 sm:px-4 shadow-sm cursor-pointer max-w-full"
                         onClick={() => setShowNotification(false)}
                     >
-                        <Zap size={14} color="var(--accent-primary)" />
-                        <span className="text-sm">{t('dashboard.recommendation')}: {recommendation.time} ({recommendation.amount}mg)</span>
-                        <X size={12} className="text-secondary ml-2" />
+                        <Zap size={14} color="var(--accent-primary)" className="flex-shrink-0" />
+                        <span className="text-xs sm:text-sm truncate">{t('dashboard.recommendation')}: {recommendation.time} ({recommendation.amount}mg)</span>
+                        <X size={12} className="text-secondary ml-auto flex-shrink-0" />
                     </div>
                 )}
             </div>
@@ -90,7 +90,7 @@ export default function DashboardPage() {
                 className="fab-button"
                 aria-label={t('intake.title')}
             >
-                <Coffee size={28} />
+                <Coffee size={24} className="sm:w-7 sm:h-7" />
             </button>
         </div>
     );

@@ -30,27 +30,27 @@ function CustomTooltip({ active, payload }: TooltipProps<number, string>) {
     if (active && payload && payload.length > 0) {
         const data = (payload[0] as unknown as CustomTooltipPayload).payload;
         return (
-            <div className="bg-white p-3 rounded-lg shadow-lg border border-gray-100 text-xs z-50">
-                <p className="font-bold mb-1">{data.time}</p>
-                <div className="flex flex-col gap-2">
-                    <div className="flex justify-between w-32 items-center">
-                        <span className="text-gray-500">Current:</span>
-                        <span className="font-bold text-lg">{data.total.toFixed(0)}</span>
+            <div className="bg-white p-2 sm:p-3 rounded-lg shadow-lg border border-gray-100 text-xs z-50 max-w-[140px] sm:max-w-none">
+                <p className="font-bold mb-1 text-[10px] sm:text-xs">{data.time}</p>
+                <div className="flex flex-col gap-1 sm:gap-2">
+                    <div className="flex justify-between min-w-[100px] sm:min-w-[128px] items-center">
+                        <span className="text-gray-500 text-[10px] sm:text-xs">Current:</span>
+                        <span className="font-bold text-sm sm:text-lg">{data.total.toFixed(0)}</span>
                     </div>
-                    <div className="flex justify-between w-32 items-center text-gray-400">
-                        <span>Baseline:</span>
-                        <span>{data.baseline.toFixed(0)}</span>
+                    <div className="flex justify-between min-w-[100px] sm:min-w-[128px] items-center text-gray-400">
+                        <span className="text-[10px] sm:text-xs">Baseline:</span>
+                        <span className="text-[10px] sm:text-xs">{data.baseline.toFixed(0)}</span>
                     </div>
                     {data.caffeine > 0 && (
-                        <div className="flex justify-between w-32 items-center text-green-600">
-                            <span>Boost:</span>
-                            <span>+{data.caffeine.toFixed(0)}</span>
+                        <div className="flex justify-between min-w-[100px] sm:min-w-[128px] items-center text-green-600">
+                            <span className="text-[10px] sm:text-xs">Boost:</span>
+                            <span className="text-[10px] sm:text-xs">+{data.caffeine.toFixed(0)}</span>
                         </div>
                     )}
                     {(data as any).predictedTotal > data.total && (
-                        <div className="flex justify-between w-32 items-center text-blue-500">
-                            <span>Predicted:</span>
-                            <span>{(data as any).predictedTotal.toFixed(0)}</span>
+                        <div className="flex justify-between min-w-[100px] sm:min-w-[128px] items-center text-blue-500">
+                            <span className="text-[10px] sm:text-xs">Predicted:</span>
+                            <span className="text-[10px] sm:text-xs">{(data as any).predictedTotal.toFixed(0)}</span>
                         </div>
                     )}
                 </div>
@@ -106,9 +106,9 @@ export default function AlertnessChart({
     };
 
     return (
-        <div style={{ width: '100%', height: '100%', backgroundColor: 'var(--bg-card)', borderRadius: '24px', position: 'relative' }}>
+        <div style={{ width: '100%', height: '100%', backgroundColor: 'var(--bg-card)', borderRadius: '24px', position: 'relative', overflow: 'hidden' }}>
             <ResponsiveContainer width="100%" height="100%">
-                <AreaChart data={chartData} margin={{ top: 20, right: 10, left: 0, bottom: 0 }}>
+                <AreaChart data={chartData} margin={{ top: 20, right: 5, left: -5, bottom: 0 }}>
                     <defs>
                         <linearGradient id="gradientTotal" x1="0" y1="0" x2="0" y2="1">
                             <stop offset="5%" stopColor="#171717" stopOpacity={0.1} />
