@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
-import { X, Coffee, AlertTriangle } from 'lucide-react';
+import { X, Coffee, AlertTriangle, Star } from 'lucide-react';
 import type { DrinkType } from '../../types';
 import { DRINK_OPTIONS, getCurrentTimeString, willHaveCaffeineAtSleep, estimateCaffeineAtSleep } from '../../lib/caffeine';
 import { useFlowState } from '../../context/FlowStateContext';
@@ -18,15 +18,31 @@ interface IntakeModalProps {
 // --- Custom Icon Components ---
 
 const CoffeeIconS = () => (
-    <div className="relative flex items-center justify-center w-12 h-12 rounded-2xl bg-orange-50 text-orange-600 shadow-sm border border-orange-100">
-        <Coffee size={24} strokeWidth={2.5} />
+    <div className="relative flex items-center justify-center w-10 h-16 rounded-sm bg-gradient-to-b from-yellow-600 via-yellow-400 to-yellow-600 shadow-md border border-yellow-700 overflow-hidden">
+        {/* Boss Homage: Short Can */}
+        {/* Top Rim */}
+        <div className="absolute top-0 w-full h-1.5 bg-gray-300 border-b border-gray-400" />
+        {/* Dark Band */}
+        <div className="absolute top-8 w-full h-5 bg-indigo-900 flex items-center justify-center">
+            <div className="w-8 h-0.5 bg-yellow-500 opacity-50" />
+        </div>
+        {/* Pipe / Face hint */}
+        <div className="absolute top-3 w-6 h-4 bg-yellow-900 rounded-full opacity-20" />
     </div>
 );
 
 const CoffeeIconL = () => (
-    <div className="relative flex items-center justify-center w-14 h-14 rounded-2xl bg-amber-100 text-amber-800 shadow-sm border border-amber-200">
-        <Coffee size={32} strokeWidth={2.5} />
-        <div className="absolute -top-1 -right-1 w-3 h-3 bg-amber-500 rounded-full border-2 border-white"></div>
+    <div className="relative flex items-center justify-center w-12 h-16">
+        {/* Starbucks Homage: Tall Cup */}
+        {/* Cup Body */}
+        <div className="w-10 h-14 bg-white border-2 border-gray-200 border-t-0 rounded-b-lg shadow-sm relative overflow-hidden flex items-center justify-center">
+            {/* Sleeve (optional, maybe just logo) */}
+            <div className="w-8 h-8 rounded-full bg-green-700 flex items-center justify-center text-white text-[8px] font-bold border border-green-600">
+                <Star size={16} fill="white" />
+            </div>
+        </div>
+        {/* Lid */}
+        <div className="absolute -top-1 w-12 h-2 bg-white border-2 border-gray-200 rounded-sm shadow-sm" />
     </div>
 );
 
