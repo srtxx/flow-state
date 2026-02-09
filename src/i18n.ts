@@ -127,10 +127,9 @@ const resources = {
                 description: '科学に基づいたカフェイン摂取と覚醒度の最適化',
                 boost: 'ブースト',
                 recover: 'リカバリー',
-                getStarted: '始める',
+                getStarted: '設定を始める',
                 sleepGoal: '睡眠目標',
-                sleepQuestion: '十分な休息を感じるのに必要な睡眠時間は？',
-                start: 'Flow Stateを開始'
+                start: 'Flow Stateを始める'
             },
 
             // Validation
@@ -286,9 +285,8 @@ const resources = {
                 description: 'Optimize your alertness and caffeine intake based on science',
                 boost: 'Boost',
                 recover: 'Recover',
-                getStarted: 'Get Started',
+                getStarted: 'Start Setup',
                 sleepGoal: 'Sleep Goal',
-                sleepQuestion: 'How many hours do you usually need to feel rested?',
                 start: 'Start Flow State'
             },
 

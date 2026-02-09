@@ -28,12 +28,14 @@ export default function OnboardingModal({ isOpen, onComplete }: OnboardingModalP
         <div className="fixed inset-0 bg-white z-[200] flex flex-col items-center justify-center p-6 sm:p-8 text-center animate-in fade-in duration-500">
             <div className="max-w-sm w-full">
                 {step === 1 ? (
-                    <div className="flex flex-col items-center gap-4 sm:gap-6">
-                        <div className="w-16 h-16 sm:w-20 sm:h-20 bg-black text-white rounded-3xl flex items-center justify-center mb-3 sm:mb-4 shadow-2xl">
-                            <Activity size={32} className="sm:w-10 sm:h-10" />
+                    <div className="flex flex-col items-center gap-6 sm:gap-8">
+                        <div className="w-20 h-20 sm:w-24 sm:h-24 bg-black text-white rounded-[2rem] flex items-center justify-center mb-4 sm:mb-6 shadow-2xl hover:scale-105 transition-transform duration-500">
+                            <Activity size={40} className="sm:w-12 sm:h-12" strokeWidth={2.5} />
                         </div>
-                        <h1 className="text-3xl sm:text-4xl font-light tracking-tight">{t('onboarding.title')}</h1>
-                        <p className="text-sm sm:text-base text-secondary leading-relaxed px-2">
+                        <h1 className="text-5xl sm:text-6xl font-bold tracking-tighter leading-tight bg-gradient-to-br from-gray-900 to-gray-600 bg-clip-text text-transparent pb-1">
+                            {t('onboarding.title')}
+                        </h1>
+                        <p className="text-base sm:text-lg text-secondary leading-relaxed px-4 font-medium max-w-md">
                             {t('onboarding.description')}
                         </p>
                         <div className="grid grid-cols-2 gap-3 sm:gap-4 w-full mt-6 sm:mt-8">
@@ -58,17 +60,34 @@ export default function OnboardingModal({ isOpen, onComplete }: OnboardingModalP
                         <h2 className="text-xl sm:text-2xl font-bold">{t('onboarding.sleepGoal')}</h2>
 
 
-                        <div className="relative w-full py-6 sm:py-8">
-                            <p className="text-5xl sm:text-6xl font-light mb-3 sm:mb-4">{avgHours}<span className="text-lg sm:text-xl text-gray-400 ml-1">時間</span></p>
-                            <input
-                                type="range"
-                                min="4"
-                                max="10"
-                                step="0.5"
-                                value={avgHours}
-                                onChange={(e) => setAvgHours(parseFloat(e.target.value))}
-                                className="w-full accent-black h-2 bg-gray-200 rounded-lg appearance-none cursor-pointer"
-                            />
+                        <div className="relative w-full py-4 sm:py-6">
+                            <div className="mb-8">
+                                <p className="text-7xl sm:text-8xl font-bold tracking-tighter text-primary flex items-baseline justify-center">
+                                    {avgHours}
+                                    <span className="text-lg sm:text-2xl text-secondary font-medium ml-2 tracking-normal">h</span>
+                                </p>
+                            </div>
+
+                            <div className="relative px-2">
+                                <input
+                                    type="range"
+                                    min="4"
+                                    max="10"
+                                    step="0.5"
+                                    value={avgHours}
+                                    onChange={(e) => setAvgHours(parseFloat(e.target.value))}
+                                    className="w-full accent-black h-2 bg-gray-200 rounded-lg appearance-none cursor-pointer"
+                                />
+                                <div className="flex justify-between mt-3 text-[10px] sm:text-xs text-secondary font-medium px-1">
+                                    <span>4h</span>
+                                    <span>5h</span>
+                                    <span>6h</span>
+                                    <span>7h</span>
+                                    <span>8h</span>
+                                    <span>9h</span>
+                                    <span>10h</span>
+                                </div>
+                            </div>
                         </div>
 
                         <button
