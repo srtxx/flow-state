@@ -14,7 +14,7 @@
   - _Requirements: 全要件に共通_
 
 - [ ] 2. 設定管理の実装
-  - [-] 2.1 ConfigManagerクラスを実装
+  - [x] 2.1 ConfigManagerクラスを実装
     - デフォルト設定の定義
     - JSON設定ファイルの読み込み
     - 設定の検証ロジック
