@@ -1,9 +1,11 @@
-import { createContext, useContext, useState, useCallback, useMemo } from 'react';
+import { createContext, useContext, useState, useCallback, useMemo, useEffect } from 'react';
 import type { ReactNode } from 'react';
-import type { SleepData, IntakeRecord, TabType, AlertnessDataPoint, DrinkType } from '../types';
+import type { SleepData, IntakeRecord, TabType, AlertnessDataPoint, DrinkType, RapidIntakeAlert, SmartRecommendation } from '../types';
 import { useLocalStorage, useAlertness, useDailyScore } from '../hooks';
 import { generateId } from '../lib/caffeine';
 import type { ToastData } from '../components/Toast';
+import { checkRapidIntake } from '../lib/alerts';
+import { generateSmartRecommendations, isRecommendationExpired, isRecommendationPastTime } from '../lib/smartRecommendations';
 
 interface FlowStateContextType {
     // State
@@ -61,6 +63,14 @@ interface FlowStateContextType {
         isDestructive?: boolean;
     };
     closeConfirm: () => void;
+
+    // Rapid Intake Alert
+    rapidIntakeAlert: RapidIntakeAlert | null;
+
+    // Smart Recommendations
+    smartRecommendations: SmartRecommendation[];
+    dismissRecommendation: (id: string) => void;
+    followRecommendation: (recommendation: SmartRecommendation) => void;
 }
 
 const DEFAULT_SLEEP_DATA: SleepData = {
@@ -92,6 +102,10 @@ export function FlowStateProvider({ children }: { children: ReactNode }) {
     // Simulation
     const [simulationParams, setSimulationParams] = useState<{ time: string; amount: number } | undefined>(undefined);
 
+    // Smart Recommendations
+    const [smartRecommendations, setSmartRecommendations] = useState<SmartRecommendation[]>([]);
+    const [dismissedRecommendations, setDismissedRecommendations] = useLocalStorage<string[]>('flow-state-dismissed-recommendations', []);
+
     // --- Computed Logic ---
     const {
         alertnessData,
@@ -107,6 +121,9 @@ export function FlowStateProvider({ children }: { children: ReactNode }) {
 
     // Weekly performance stats (ticket #003)
     const { weeklyStats } = useDailyScore(currentAlertness, totalCaffeineToday);
+
+    // Rapid intake alert
+    const rapidIntakeAlert = useMemo(() => checkRapidIntake(intakeRecords), [intakeRecords]);
 
     // Confirm Dialog
     const [confirmConfig, setConfirmConfig] = useState<{
@@ -145,6 +162,49 @@ export function FlowStateProvider({ children }: { children: ReactNode }) {
         setToasts(prev => prev.filter(t => t.id !== id));
     }, []);
 
+    // Smart Recommendations Actions
+    const dismissRecommendation = useCallback((id: string) => {
+        setDismissedRecommendations(prev => [...prev, id]);
+        setSmartRecommendations(prev => prev.filter(rec => rec.id !== id));
+    }, [setDismissedRecommendations]);
+
+    const followRecommendation = useCallback((recommendation: SmartRecommendation) => {
+        // IntakeModalを開く（時刻と量は手動で入力する想定）
+        setShowIntakeModal(true);
+        // 推奨を却下してクリーンアップ
+        dismissRecommendation(recommendation.id);
+        showToast('推奨タイミングで記録しましょう！', 'info');
+    }, [dismissRecommendation, showToast]);
+
+    // 推奨生成ロジック（1分ごとに更新）
+    useEffect(() => {
+        const updateRecommendations = () => {
+            // 新しい推奨を生成
+            const newRecommendations = generateSmartRecommendations(
+                sleepData,
+                intakeRecords,
+                alertnessData
+            );
+
+            // 有効期限切れ・時刻過ぎ・却下済みをフィルタリング
+            const validRecommendations = newRecommendations.filter(rec =>
+                !isRecommendationExpired(rec) &&
+                !isRecommendationPastTime(rec) &&
+                !dismissedRecommendations.includes(rec.id)
+            );
+
+            setSmartRecommendations(validRecommendations);
+        };
+
+        // 初回実行
+        updateRecommendations();
+
+        // 1分ごとに更新
+        const interval = setInterval(updateRecommendations, 60000);
+
+        return () => clearInterval(interval);
+    }, [sleepData, intakeRecords, alertnessData, dismissedRecommendations]);
+
     // --- Actions ---
     const addIntake = useCallback((drink: DrinkType, amount: number, time: string) => {
         const newRecord: IntakeRecord = {
@@ -178,7 +238,7 @@ export function FlowStateProvider({ children }: { children: ReactNode }) {
         activeTab,
         showNotification,
         alertnessData,
-        predictedData, // Added
+        predictedData,
         currentAlertness,
         actualSleepHours,
         totalCaffeineToday,
@@ -201,14 +261,22 @@ export function FlowStateProvider({ children }: { children: ReactNode }) {
         dismissToast,
         confirmConfig,
         closeConfirm,
-        simulationParams, // Added
-        setSimulationParams // Added
+        simulationParams,
+        setSimulationParams,
+        rapidIntakeAlert,
+        smartRecommendations,
+        dismissRecommendation,
+        followRecommendation
     }), [
         sleepData, intakeRecords, hasOnboarded, activeTab, showNotification,
         alertnessData, predictedData, currentAlertness, actualSleepHours, totalCaffeineToday, avoidAfterTime, recommendation, isOverLimit,
         weeklyStats, setSleepData, addIntake, deleteIntake, completeOnboarding,
         showIntakeModal, showSleepInput, toasts, showToast, dismissToast, confirmConfig, closeConfirm,
-        simulationParams, setSimulationParams // Added to dependencies
+        simulationParams, setSimulationParams,
+        rapidIntakeAlert,
+        smartRecommendations,
+        dismissRecommendation,
+        followRecommendation
     ]);
 
     return (

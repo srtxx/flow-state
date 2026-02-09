@@ -255,10 +255,10 @@ export function getRecommendedIntakeTime(
  * Drink presets
  */
 export const DRINK_OPTIONS: DrinkOption[] = [
-    { name: 'COFFEE S', label: 'コーヒーS', defaultMg: 100 },
-    { name: 'COFFEE L', label: 'コーヒーL', defaultMg: 200 },
-    { name: 'ENERGY S', label: 'エナジードリンクS', defaultMg: 80 },
-    { name: 'ENERGY L', label: 'エナジードリンクL', defaultMg: 142 },
+    { name: 'COFFEE S', label: 'intake.drinks.coffeeS', defaultMg: 100 },
+    { name: 'COFFEE L', label: 'intake.drinks.coffeeL', defaultMg: 200 },
+    { name: 'ENERGY S', label: 'intake.drinks.energyS', defaultMg: 80 },
+    { name: 'ENERGY L', label: 'intake.drinks.energyL', defaultMg: 142 },
 ];
 
 /**

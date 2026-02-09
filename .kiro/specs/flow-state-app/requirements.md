@@ -180,7 +180,12 @@ Flow State is a science-based caffeine intake optimization and alertness trackin
 - 2.12.4 Adjust chart colors for dark mode visibility
 - 2.12.5 Adjust shadows and borders for dark mode aesthetics
 
-## 3. Non-Functional Requirements
+### 2.13 Rapid Intake Alert System
+**Priority:** High
+
+**User Story:** As a user, I want to be warned when I consume too much caffeine in a short period so that I can avoid adverse health effects like increased heart rate and anxiety.
+
+**Acceptance Criteria:*
 
 ### 3.1 Performance
 - 3.1.1 Initial page load < 2 seconds on 3G connection

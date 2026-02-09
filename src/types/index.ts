@@ -43,3 +43,30 @@ export interface AppState {
     showOnboarding: boolean;
     showPrediction: boolean;
 }
+
+// Smart Recommendation types
+export interface SmartRecommendation {
+    id: string;
+    type: 'afternoon_dip' | 'performance_max' | 'general';
+    recommendedTime: string; // HH:mm format
+    recommendedAmount: number; // mg
+    reasons: string[];
+    predictedEffect: {
+        currentAlertness: number;
+        predictedAlertness: number;
+        improvement: number;
+    };
+    confidenceScore: number; // 0-100
+    expiresAt: number; // timestamp
+}
+
+export interface AlertnessDip {
+    dipStart: string; // HH:mm format
+    dipPeak: string; // HH:mm format
+    dipEnd: string; // HH:mm format
+    severity: 'mild' | 'moderate' | 'severe';
+}
+
+// Alert types
+export type { RapidIntakeAlert } from '../lib/alerts';
+

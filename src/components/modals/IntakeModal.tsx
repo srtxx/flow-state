@@ -1,10 +1,13 @@
 import { useState, useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
-import { X, Coffee, Zap, AlertTriangle } from 'lucide-react';
+import { X, Coffee, AlertTriangle } from 'lucide-react';
 import type { DrinkType } from '../../types';
 import { DRINK_OPTIONS, getCurrentTimeString, willHaveCaffeineAtSleep, estimateCaffeineAtSleep } from '../../lib/caffeine';
 import { useFlowState } from '../../context/FlowStateContext';
 import AlertnessChart from '../AlertnessChart';
+import RapidIntakeAlertDialog from '../RapidIntakeAlertDialog';
+import { checkRapidIntakeWithSimulation } from '../../lib/alerts';
+import type { RapidIntakeAlert } from '../../types';
 
 interface IntakeModalProps {
     isOpen: boolean;
@@ -28,15 +31,31 @@ const CoffeeIconL = () => (
 );
 
 const EnergyIconS = () => (
-    <div className="relative flex items-center justify-center w-12 h-12 rounded-2xl bg-sky-50 text-sky-600 shadow-sm border border-sky-100">
-        <Zap size={24} strokeWidth={2.5} className="fill-sky-100" />
+    <div className="relative flex items-center justify-center w-12 h-12 rounded-2xl bg-gradient-to-br from-blue-600 to-blue-700 shadow-sm border-2 border-gray-300 overflow-hidden">
+        {/* Red Bull Silhouette */}
+        <svg viewBox="0 0 48 48" className="w-full h-full absolute inset-0 opacity-90">
+            {/* Bull head */}
+            <circle cx="24" cy="26" r="8" fill="#dc2626" />
+            {/* Left horn */}
+            <path d="M 18 22 Q 14 18, 12 14" stroke="#dc2626" strokeWidth="2" fill="none" strokeLinecap="round" />
+            {/* Right horn */}
+            <path d="M 30 22 Q 34 18, 36 14" stroke="#dc2626" strokeWidth="2" fill="none" strokeLinecap="round" />
+            {/* Snout */}
+            <ellipse cx="24" cy="30" rx="4" ry="3" fill="#b91c1c" />
+        </svg>
     </div>
 );
 
 const EnergyIconL = () => (
-    <div className="relative flex items-center justify-center w-14 h-14 rounded-2xl bg-lime-100 text-lime-700 shadow-sm border border-lime-200">
-        <Zap size={32} strokeWidth={2.5} className="fill-lime-200" />
-        <div className="absolute -top-1 -right-1 w-3 h-3 bg-lime-500 rounded-full border-2 border-white"></div>
+    <div className="relative flex items-center justify-center w-14 h-14 rounded-2xl bg-zinc-950 shadow-sm border-2 border-gray-800 overflow-hidden">
+        {/* Monster Claw Marks */}
+        <svg viewBox="0 0 56 56" className="w-full h-full absolute inset-0">
+            {/* Three vertical claw marks */}
+            <path d="M 16 12 L 18 44" stroke="#22c55e" strokeWidth="4" strokeLinecap="round" />
+            <path d="M 28 10 L 28 46" stroke="#22c55e" strokeWidth="4" strokeLinecap="round" />
+            <path d="M 40 12 L 38 44" stroke="#22c55e" strokeWidth="4" strokeLinecap="round" />
+        </svg>
+        <div className="absolute -top-1 -right-1 w-3 h-3 bg-lime-500 rounded-full border-2 border-zinc-950"></div>
     </div>
 );
 
@@ -44,12 +63,16 @@ export default function IntakeModal({ isOpen, onClose, onAdd }: IntakeModalProps
     const { t } = useTranslation();
     const { showToast, alertnessData, predictedData, intakeRecords, setSimulationParams, sleepData } = useFlowState();
     const [hoveredDrink, setHoveredDrink] = useState<{ drink: DrinkType; amount: number } | null>(null);
+    const [pendingIntake, setPendingIntake] = useState<{ drink: DrinkType; amount: number } | null>(null);
+    const [rapidIntakeAlert, setRapidIntakeAlert] = useState<RapidIntakeAlert | null>(null);
 
     // Reset state when modal opens
     useEffect(() => {
         if (!isOpen) {
             setSimulationParams(undefined);
             setHoveredDrink(null);
+            setPendingIntake(null);
+            setRapidIntakeAlert(null);
         }
     }, [isOpen, setSimulationParams]);
 
@@ -68,9 +91,36 @@ export default function IntakeModal({ isOpen, onClose, onAdd }: IntakeModalProps
 
     const handleQuickAdd = (drink: DrinkType, amount: number) => {
         const time = getCurrentTimeString();
-        onAdd(drink, amount, time);
-        showToast(`${drink} (${amount}mg) ${t('intake.recorded')}`, 'success');
-        onClose();
+
+        // Check for rapid intake
+        const alert = checkRapidIntakeWithSimulation(intakeRecords, amount, time);
+
+        if (alert) {
+            // Show alert dialog
+            setPendingIntake({ drink, amount });
+            setRapidIntakeAlert(alert);
+        } else {
+            // No alert, proceed with recording
+            onAdd(drink, amount, time);
+            showToast(`${drink} (${amount}mg) ${t('intake.recorded')}`, 'success');
+            onClose();
+        }
+    };
+
+    const handleConfirmWithAlert = () => {
+        if (pendingIntake) {
+            const time = getCurrentTimeString();
+            onAdd(pendingIntake.drink, pendingIntake.amount, time);
+            showToast(`${pendingIntake.drink} (${pendingIntake.amount}mg) ${t('intake.recorded')}`, 'success');
+            setPendingIntake(null);
+            setRapidIntakeAlert(null);
+            onClose();
+        }
+    };
+
+    const handleCancelAlert = () => {
+        setPendingIntake(null);
+        setRapidIntakeAlert(null);
     };
 
     const quickAddWillAffectSleep = hoveredDrink &&
@@ -167,13 +217,22 @@ export default function IntakeModal({ isOpen, onClose, onAdd }: IntakeModalProps
                                 {renderIcon(drink.name)}
                             </div>
                             <div className="w-full text-center z-10">
-                                <p className="font-bold text-sm sm:text-base leading-tight mb-0.5">{drink.name}</p>
+                                <p className="font-bold text-sm sm:text-base leading-tight mb-0.5">{t(drink.label)}</p>
                                 <p className="text-xs text-secondary font-medium">{drink.defaultMg}mg</p>
                             </div>
                         </button>
                     ))}
                 </div>
             </div>
+
+            {/* Rapid Intake Alert Dialog */}
+            {rapidIntakeAlert && (
+                <RapidIntakeAlertDialog
+                    alert={rapidIntakeAlert}
+                    onConfirm={handleConfirmWithAlert}
+                    onCancel={handleCancelAlert}
+                />
+            )}
         </div>
     );
 }

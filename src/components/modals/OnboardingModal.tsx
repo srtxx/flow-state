@@ -59,7 +59,7 @@ export default function OnboardingModal({ isOpen, onComplete }: OnboardingModalP
                         <p className="text-secondary text-xs sm:text-sm px-2">{t('onboarding.sleepQuestion')}</p>
 
                         <div className="relative w-full py-6 sm:py-8">
-                            <p className="text-5xl sm:text-6xl font-light mb-3 sm:mb-4">{avgHours}<span className="text-lg sm:text-xl text-gray-400 ml-1">h</span></p>
+                            <p className="text-5xl sm:text-6xl font-light mb-3 sm:mb-4">{avgHours}<span className="text-lg sm:text-xl text-gray-400 ml-1">時間</span></p>
                             <input
                                 type="range"
                                 min="4"

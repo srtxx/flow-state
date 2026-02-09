@@ -114,14 +114,16 @@ body {
 .app-container {
   width: 100%;
   max-width: var(--max-width);
-  min-height: 100vh;
-  min-height: 100dvh;
+  height: 100vh;
+  height: 100dvh;
+  /* Fixed height for internal scrolling */
   background-color: var(--bg-app);
   box-shadow: 0 0 50px rgba(0, 0, 0, 0.5);
   position: relative;
   display: flex;
   flex-direction: column;
-  overflow-x: hidden;
+  overflow: hidden;
+  /* Prevent body scroll */
 }
 
 /* ============================================
@@ -218,7 +220,13 @@ body {
   flex-direction: column;
   width: 100%;
   max-width: 100%;
+  overflow-y: auto;
+  /* Enable vertical scroll */
+  overscroll-behavior-y: contain;
+  /* Prevent pull-to-refresh on body */
   overflow-x: hidden;
+  -webkit-overflow-scrolling: touch;
+  /* Smooth scrolling on iOS */
 }
 
 @media (min-width: 360px) {

@@ -1,0 +1,25 @@
+{
+    "name": "FLOW STATE - カフェイン覚醒度トラッカー",
+    "short_name": "FLOW STATE",
+    "description": "カフェイン摂取トラッキングと覚醒度最適化アプリ",
+    "start_url": "/",
+    "display": "standalone",
+    "background_color": "#000000",
+    "theme_color": "#000000",
+    "orientation": "portrait",
+    "scope": "/",
+    "icons": [
+        {
+            "src": "/vite.svg",
+            "sizes": "any",
+            "type": "image/svg+xml",
+            "purpose": "any maskable"
+        }
+    ],
+    "categories": [
+        "health",
+        "lifestyle",
+        "productivity"
+    ],
+    "lang": "ja"
+}

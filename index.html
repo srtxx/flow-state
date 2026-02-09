@@ -1,20 +1,63 @@
 <!doctype html>
 <html lang="ja">
-  <head>
-    <meta charset="UTF-8" />
-    <link rel="icon" type="image/svg+xml" href="/vite.svg" />
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@100;300;400;700&display=swap" rel="stylesheet">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover" />
-    <meta name="theme-color" content="#000000" />
-    <meta name="description" content="FLOW STATE - カフェイン摂取トラッキングと覚醒度最適化アプリ。科学的なアプローチで最適なパフォーマンスを維持。" />
-    <meta name="apple-mobile-web-app-capable" content="yes" />
-    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
-    <title>FLOW STATE | カフェイン覚醒度トラッカー</title>
-  </head>
-  <body>
-    <div id="root"></div>
-    <script type="module" src="/src/main.tsx"></script>
-  </body>
+
+<head>
+  <meta charset="UTF-8" />
+  <link rel="icon" type="image/svg+xml" href="/vite.svg" />
+  <link rel="manifest" href="/manifest.json" />
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@100;300;400;700&display=swap" rel="stylesheet">
+
+  <!-- Viewport & Mobile Settings -->
+  <meta name="viewport"
+    content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover" />
+  <meta name="theme-color" content="#000000" />
+  <meta name="apple-mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+
+  <!-- SEO Meta Tags -->
+  <meta name="description" content="FLOW STATE - カフェイン摂取トラッキングと覚醒度最適化アプリ。科学的なアプローチで最適なパフォーマンスを維持。" />
+  <meta name="keywords" content="カフェイン,トラッキング,覚醒度,パフォーマンス,コーヒー,エナジードリンク,caffeine,tracker,performance,flow state" />
+  <meta name="author" content="Flow State" />
+  <meta name="robots" content="index, follow" />
+
+  <!-- Open Graph Protocol (OGP) -->
+  <meta property="og:type" content="website" />
+  <meta property="og:title" content="FLOW STATE | カフェイン覚醒度トラッカー" />
+  <meta property="og:description" content="カフェイン摂取トラッキングと覚醒度最適化アプリ。科学的なアプローチで最適なパフォーマンスを維持。" />
+  <meta property="og:site_name" content="FLOW STATE" />
+  <meta property="og:locale" content="ja_JP" />
+
+  <!-- Twitter Card -->
+  <meta name="twitter:card" content="summary_large_image" />
+  <meta name="twitter:title" content="FLOW STATE | カフェイン覚醒度トラッカー" />
+  <meta name="twitter:description" content="カフェイン摂取トラッキングと覚醒度最適化アプリ。科学的なアプローチで最適なパフォーマンスを維持。" />
+
+  <title>FLOW STATE | カフェイン覚醒度トラッカー</title>
+
+  <!-- Structured Data (JSON-LD) -->
+  <script type="application/ld+json">
+    {
+      "@context": "https://schema.org",
+      "@type": "WebApplication",
+      "name": "FLOW STATE",
+      "description": "カフェイン摂取トラッキングと覚醒度最適化アプリ",
+      "applicationCategory": "HealthApplication",
+      "operatingSystem": "Web, iOS, Android",
+      "offers": {
+        "@type": "Offer",
+        "price": "0",
+        "priceCurrency": "JPY"
+      },
+      "inLanguage": "ja"
+    }
+    </script>
+</head>
+
+<body>
+  <div id="root"></div>
+  <script type="module" src="/src/main.tsx"></script>
+</body>
+
 </html>

@@ -12,6 +12,7 @@ import {
 import type { TooltipProps } from 'recharts';
 import type { AlertnessDataPoint, IntakeRecord } from '../types';
 import { timeToDecimalHours } from '../lib/caffeine';
+import { useTranslation } from 'react-i18next';
 
 interface AlertnessChartProps {
     data: AlertnessDataPoint[];
@@ -28,6 +29,7 @@ interface CustomTooltipPayload {
 }
 
 function CustomTooltip({ active, payload }: TooltipProps<number, string>) {
+    const { t } = useTranslation();
     if (active && payload && payload.length > 0) {
         const data = (payload[0] as unknown as CustomTooltipPayload).payload;
         return (
@@ -35,22 +37,22 @@ function CustomTooltip({ active, payload }: TooltipProps<number, string>) {
                 <p className="font-bold mb-1 text-[10px] sm:text-xs">{data.time}</p>
                 <div className="flex flex-col gap-1 sm:gap-2">
                     <div className="flex justify-between min-w-[100px] sm:min-w-[128px] items-center">
-                        <span className="text-gray-500 text-[10px] sm:text-xs">Current:</span>
+                        <span className="text-gray-500 text-[10px] sm:text-xs">{t('dashboard.chart.tooltip.current')}:</span>
                         <span className="font-bold text-sm sm:text-lg">{data.total.toFixed(0)}</span>
                     </div>
                     <div className="flex justify-between min-w-[100px] sm:min-w-[128px] items-center text-gray-400">
-                        <span className="text-[10px] sm:text-xs">Baseline:</span>
+                        <span className="text-[10px] sm:text-xs">{t('dashboard.chart.tooltip.baseline')}:</span>
                         <span className="text-[10px] sm:text-xs">{data.baseline.toFixed(0)}</span>
                     </div>
                     {data.caffeine > 0 && (
                         <div className="flex justify-between min-w-[100px] sm:min-w-[128px] items-center text-green-600">
-                            <span className="text-[10px] sm:text-xs">Boost:</span>
+                            <span className="text-[10px] sm:text-xs">{t('dashboard.chart.tooltip.boost')}:</span>
                             <span className="text-[10px] sm:text-xs">+{data.caffeine.toFixed(0)}</span>
                         </div>
                     )}
                     {(data as any).predictedTotal > data.total && (
                         <div className="flex justify-between min-w-[100px] sm:min-w-[128px] items-center text-blue-500">
-                            <span className="text-[10px] sm:text-xs">Predicted:</span>
+                            <span className="text-[10px] sm:text-xs">{t('dashboard.chart.tooltip.predicted')}:</span>
                             <span className="text-[10px] sm:text-xs">{(data as any).predictedTotal.toFixed(0)}</span>
                         </div>
                     )}
@@ -67,6 +69,8 @@ export default function AlertnessChart({
     intakeRecords,
     showBaseline = true,
 }: AlertnessChartProps) {
+    const { t } = useTranslation();
+
     // Merge predicted data if available
     const chartData = data.map((d, i) => ({
         ...d,
@@ -155,7 +159,7 @@ export default function AlertnessChart({
                     {/* Baseline */}
                     {showBaseline && (
                         <Area
-                            name="Sleep Baseline"
+                            name={t('dashboard.chart.baseline')}
                             type="monotone"
                             dataKey="baseline"
                             stroke="var(--text-secondary)"
@@ -170,7 +174,7 @@ export default function AlertnessChart({
                     {/* Predicted Alertness (only if different) */}
                     {predictedData && (
                         <Area
-                            name="Predicted Level"
+                            name={t('dashboard.chart.predicted')}
                             type="monotone"
                             dataKey="predictedTotal"
                             stroke="#3B82F6"
@@ -184,7 +188,7 @@ export default function AlertnessChart({
 
                     {/* Total Alertness */}
                     <Area
-                        name="Alertness Level"
+                        name={t('dashboard.chart.alertness')}
                         type="monotone"
                         dataKey="total"
                         stroke="var(--accent-primary)"
@@ -226,12 +230,11 @@ export default function AlertnessChart({
                                     stroke="var(--bg-subtle)"
                                     strokeDasharray="4 4"
                                     label={{
-                                        value: 'Next Day',
-                                        position: 'insideTopLeft',
+                                        value: t('dashboard.chart.nextDay'),
+                                        position: 'insideTop',
                                         fill: 'var(--text-secondary)',
-                                        fontSize: 10,
-                                        dy: 5,
-                                        dx: 5
+                                        fontSize: 16,
+                                        dy: -10
                                     }}
                                 />
                             );
@@ -245,11 +248,12 @@ export default function AlertnessChart({
                         stroke="var(--status-critical)"
                         strokeDasharray="2 2"
                         label={{
-                            value: 'NOW',
-                            position: 'top',
+                            value: t('dashboard.chart.now'),
+                            position: 'insideTop',
                             fill: 'var(--status-critical)',
-                            fontSize: 10,
-                            fontWeight: 'bold'
+                            fontSize: 16,
+                            fontWeight: 'normal',
+                            dy: -10
                         }}
                     />
                 </AreaChart>

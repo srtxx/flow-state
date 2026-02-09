@@ -27,7 +27,7 @@ export default function Layout({
                 </div>
                 <button onClick={onSleepClick} className="sleep-button">
                     <Moon size={16} />
-                    <span>{actualSleepHours.toFixed(1)}h</span>
+                    <span>{actualSleepHours.toFixed(1)}時間</span>
                 </button>
             </header>
 

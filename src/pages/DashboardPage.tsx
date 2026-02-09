@@ -1,6 +1,6 @@
 import { Bell, X, Zap, Coffee } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
-import { AlertnessChart } from '../components';
+import { AlertnessChart, SmartRecommendationCard } from '../components';
 import { useFlowState } from '../context/FlowStateContext';
 
 export default function DashboardPage() {
@@ -14,6 +14,9 @@ export default function DashboardPage() {
         setShowIntakeModal,
         totalCaffeineToday,
         recommendation,
+        smartRecommendations,
+        dismissRecommendation,
+        followRecommendation,
     } = useFlowState();
 
     const onRecordClick = () => setShowIntakeModal(true);
@@ -71,6 +74,22 @@ export default function DashboardPage() {
                     </div>
                 )}
             </div>
+
+            {/* Smart Recommendation Card */}
+            {smartRecommendations.length > 0 && (
+                <div className="px-2">
+                    <SmartRecommendationCard
+                        recommendation={smartRecommendations[0]}
+                        onRecordNow={() => followRecommendation(smartRecommendations[0])}
+                        onRemindLater={() => {
+                            // 簡易実装: 30分後にリマインド（今回はトースト通知のみ）
+                            dismissRecommendation(smartRecommendations[0].id);
+                            alert('30分後にリマインダーを設定しました（簡易実装）');
+                        }}
+                        onDismiss={() => dismissRecommendation(smartRecommendations[0].id)}
+                    />
+                </div>
+            )}
 
             {/* Main Visual: Chart */}
             <div className="main-chart-container">

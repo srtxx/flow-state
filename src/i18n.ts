@@ -31,7 +31,20 @@ const resources = {
                     overLimit: '摂取制限超過'
                 },
                 recommendation: 'おすすめ',
-                limitWarning: '制限超過'
+                limitWarning: '制限超過',
+                chart: {
+                    now: '🕒',
+                    nextDay: '🌙',
+                    baseline: '睡眠ベースライン',
+                    predicted: '予測レベル',
+                    alertness: '覚醒度レベル',
+                    tooltip: {
+                        current: '現在',
+                        baseline: 'ベースライン',
+                        boost: 'ブースト',
+                        predicted: '予測'
+                    }
+                }
             },
 
             // Intake
@@ -46,7 +59,13 @@ const resources = {
                 recorded: '記録しました',
                 sleepImpactWarning: '睡眠への影響',
                 sleepImpactMessage: '就寝時刻（{{sleepTime}}）まで{{hours}}時間。約{{amount}}mgのカフェインが体内に残ります。',
-                acknowledgeImpact: '影響を理解しました'
+                acknowledgeImpact: '影響を理解しました',
+                drinks: {
+                    coffeeS: 'コーヒーS',
+                    coffeeL: 'コーヒーL',
+                    energyS: 'エナジードリンクS',
+                    energyL: 'エナジードリンクL'
+                }
             },
 
             // Sleep
@@ -85,7 +104,16 @@ const resources = {
                 recoveryMessage: '今日は回復に専念しましょう',
                 weeklyTrend: '週間トレンド',
                 avgAlertness: '平均覚醒度',
-                avgSleep: '平均睡眠'
+                avgSleep: '平均睡眠',
+                support: {
+                    title: '開発者をサポート',
+                    subtitle: 'Buy Me a Coffee ☕'
+                },
+                insufficientData: {
+                    title: 'データ不足',
+                    description: '数日使用すると表示されます'
+                },
+                trackingDays: '{{days}}日間計測中'
             },
 
             // Onboarding
@@ -105,6 +133,55 @@ const resources = {
                 amountRequired: 'カフェイン量を入力してください',
                 amountRange: 'カフェイン量は1〜1000mgの範囲で入力してください',
                 invalidTime: '有効な時刻を入力してください'
+            },
+
+            // Smart Recommendations
+            smartRecommendation: {
+                title: 'スマート推奨',
+                optimalTiming: '最適タイミング',
+                recommendedAmount: '推奨量',
+                predictedEffect: '予測効果',
+                current: '現在',
+                predicted: '予測',
+                reasons: '理由',
+                confidence: '信頼度',
+                actions: {
+                    recordNow: '今すぐ記録',
+                    remindLater: '30分後',
+                    dismiss: '却下'
+                },
+                types: {
+                    afternoonDip: 'アフタヌーンディップ対策',
+                    performanceMax: 'パフォーマンス最大化',
+                    general: '一般推奨'
+                }
+            },
+
+            // Alerts
+            alerts: {
+                rapidIntake: {
+                    title: '急速摂取の警告',
+                    badge: '急速摂取',
+                    critical: '1時間以内に{{amount}}mgのカフェインを摂取しています。',
+                    warning: '2時間以内に{{amount}}mgのカフェインを摂取しています。',
+                    willExceed: 'この摂取により、{{timeWindow}}時間以内の総摂取量が{{amount}}mgになります。',
+                    risks: {
+                        title: '考えられるリスク',
+                        heartRate: '心拍数の上昇',
+                        anxiety: '不安感・焦燥感',
+                        tremor: '手の震え',
+                        concentration: '集中力の低下'
+                    },
+                    recommendations: {
+                        title: '推奨アクション',
+                        hydrate: '水分を多めに摂取する',
+                        breathe: '深呼吸で落ち着く',
+                        wait: '次の摂取まで3-4時間空ける',
+                        consult: '症状が続く場合は医療機関に相談'
+                    },
+                    understandAndRecord: '理解して記録',
+                    cancelRecord: 'キャンセル'
+                }
             }
         }
     },
@@ -210,6 +287,55 @@ const resources = {
                 amountRequired: 'Please enter caffeine amount',
                 amountRange: 'Caffeine amount must be between 1-1000mg',
                 invalidTime: 'Please enter a valid time'
+            },
+
+            // Smart Recommendations
+            smartRecommendation: {
+                title: 'Smart Recommendation',
+                optimalTiming: 'Optimal Timing',
+                recommendedAmount: 'Recommended Amount',
+                predictedEffect: 'Predicted Effect',
+                current: 'Current',
+                predicted: 'Predicted',
+                reasons: 'Reasons',
+                confidence: 'Confidence',
+                actions: {
+                    recordNow: 'Record Now',
+                    remindLater: '30 min later',
+                    dismiss: 'Dismiss'
+                },
+                types: {
+                    afternoonDip: 'Afternoon Dip Prevention',
+                    performanceMax: 'Performance Maximization',
+                    general: 'General Recommendation'
+                }
+            },
+
+            // Alerts
+            alerts: {
+                rapidIntake: {
+                    title: 'Rapid Intake Warning',
+                    badge: 'Rapid Intake',
+                    critical: 'You\'ve consumed {{amount}}mg of caffeine within 1 hour.',
+                    warning: 'You\'ve consumed {{amount}}mg of caffeine within 2 hours.',
+                    willExceed: 'This intake will result in {{amount}}mg within {{timeWindow}} hours.',
+                    risks: {
+                        title: 'Potential Risks',
+                        heartRate: 'Increased heart rate',
+                        anxiety: 'Anxiety and restlessness',
+                        tremor: 'Hand tremors',
+                        concentration: 'Reduced concentration'
+                    },
+                    recommendations: {
+                        title: 'Recommended Actions',
+                        hydrate: 'Drink plenty of water',
+                        breathe: 'Practice deep breathing',
+                        wait: 'Wait 3-4 hours before next intake',
+                        consult: 'Consult a doctor if symptoms persist'
+                    },
+                    understandAndRecord: 'I Understand, Record',
+                    cancelRecord: 'Cancel'
+                }
             }
         }
     }
