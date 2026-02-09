@@ -1,7 +1,8 @@
-import { Bell, X, Zap, Coffee } from 'lucide-react';
+import { Bell, X, Zap, Coffee, Clock } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
 import { AlertnessChart, SmartRecommendationCard } from '../components';
 import { useFlowState } from '../context/FlowStateContext';
+import { estimateCaffeineAtSleep, getCurrentTimeString } from '../lib/caffeine';
 
 export default function DashboardPage() {
     const { t } = useTranslation();
@@ -27,82 +28,54 @@ export default function DashboardPage() {
 
     // Status Logic
     let statusText = t('dashboard.status.good');
-    let statusColor = "var(--status-good)";
 
     if (isOverLimit) {
         statusText = t('dashboard.status.overLimit');
-        statusColor = "var(--status-critical)";
     } else if (currentAlertness > 80) {
         statusText = t('dashboard.status.peak');
-        statusColor = "var(--status-good)";
     } else if (currentAlertness < 40) {
         statusText = t('dashboard.status.low');
-        statusColor = "var(--status-warning)";
     }
 
+    // Calculate Peak Time
+    const getPeakTime = () => {
+        if (!alertnessData || alertnessData.length === 0) return '--:--';
+        const max = Math.max(...alertnessData.map(d => d.total));
+        const peak = alertnessData.find(d => d.total === max);
+        return peak ? peak.time : '--:--';
+    };
+    const peakTimeStr = getPeakTime();
+
+    // Calculate Active Caffeine (approximate remaining in body now)
+    const activeCaffeine = Math.round(intakeRecords.reduce((sum, record) => {
+        return sum + estimateCaffeineAtSleep(record.amount, record.time, getCurrentTimeString());
+    }, 0));
+
     return (
-        <div className="dashboard-page">
-            {/* Hero Section */}
-            <div className="score-display-large px-2">
-                <span className="score-value-large">{currentAlertness}</span>
-                <span className="score-label-small">{t('dashboard.currentAlertness')}</span>
-
-                <div className="status-pill">
-                    <div className="status-dot" style={{ backgroundColor: statusColor }} />
-                    <span className="text-xs sm:text-sm">{statusText}</span>
+        <div className="dashboard-page pb-24 space-y-4 sm:space-y-6">
+            {/* Header: Score & Status */}
+            <div className="flex items-end justify-between px-4 pt-4 sm:pt-6">
+                <div>
+                    <div className="flex items-baseline gap-2 sm:gap-3">
+                        <span className="text-7xl sm:text-8xl font-bold tracking-tighter text-primary leading-none">{Math.round(currentAlertness)}</span>
+                        <span className="text-xs sm:text-sm font-bold text-secondary uppercase tracking-wider mb-2">{t('dashboard.currentAlertness')}</span>
+                    </div>
                 </div>
-
-                {/* Rapid Intake Badge */}
-                {/* TODO: Implement rapid intake alert feature
-                {rapidIntakeAlert && (
-                    <div className="mt-3">
-                        <RapidIntakeBadge />
+                <div className="flex flex-col items-end gap-1 mb-2">
+                    <div className={`px-3 py-1.5 rounded-full flex items-center gap-2 border ${isOverLimit ? 'bg-red-500/10 text-red-500 border-red-500/20' :
+                            currentAlertness > 80 ? 'bg-green-500/10 text-green-500 border-green-500/20' :
+                                currentAlertness < 40 ? 'bg-orange-500/10 text-orange-500 border-orange-500/20' :
+                                    'bg-blue-500/10 text-blue-500 border-blue-500/20'
+                        }`}>
+                        <span className="w-2 h-2 rounded-full bg-current animate-pulse"></span>
+                        <span className="text-xs sm:text-sm font-bold">{statusText}</span>
                     </div>
-                )}
-                */}
-            </div>
-
-            {/* Insight / Notification (Floating Pill) */}
-            <div className="flex flex-col items-center gap-2 mb-4 px-2">
-                {/* Only show critical warnings or valid recommendations */}
-                {isOverLimit && (
-                    <div className="card-soft flex items-center gap-2 py-2 px-3 sm:px-4 shadow-sm max-w-full">
-                        <Bell size={14} color="var(--status-critical)" className="flex-shrink-0" />
-                        <span className="text-xs sm:text-sm font-bold text-secondary truncate">制限超過 ({totalCaffeineToday}mg)</span>
-                    </div>
-                )}
-
-                {!isOverLimit && recommendation && showNotification && (
-                    <div
-                        className="card-soft flex items-center gap-2 py-2 px-3 sm:px-4 shadow-sm cursor-pointer max-w-full"
-                        onClick={() => setShowNotification(false)}
-                    >
-                        <Zap size={14} color="var(--accent-primary)" className="flex-shrink-0" />
-                        <span className="text-xs sm:text-sm truncate">{t('dashboard.recommendation')}: {recommendation.time} ({recommendation.amount}mg)</span>
-                        <X size={12} className="text-secondary ml-auto flex-shrink-0" />
-                    </div>
-                )}
-            </div>
-
-            {/* Smart Recommendation Card */}
-            {smartRecommendations.length > 0 && (
-                <div className="px-2">
-                    <SmartRecommendationCard
-                        recommendation={smartRecommendations[0]}
-                        onRecordNow={() => followRecommendation(smartRecommendations[0])}
-                        onRemindLater={() => {
-                            // 簡易実装: 30分後にリマインド（今回はトースト通知のみ）
-                            dismissRecommendation(smartRecommendations[0].id);
-                            alert('30分後にリマインダーを設定しました（簡易実装）');
-                        }}
-                        onDismiss={() => dismissRecommendation(smartRecommendations[0].id)}
-                    />
                 </div>
-            )}
+            </div>
 
             {/* Main Visual: Chart */}
-            <div className="main-chart-container">
-                <div className="chart-container-clean">
+            <div className="w-full px-0 sm:px-2">
+                <div className="chart-container-clean h-[240px] sm:h-[280px]">
                     <AlertnessChart
                         data={alertnessData}
                         intakeRecords={intakeRecords}
@@ -111,6 +84,64 @@ export default function DashboardPage() {
                     />
                 </div>
             </div>
+
+            {/* Quick Stats Grid */}
+            <div className="grid grid-cols-3 gap-3 px-4">
+                <div className="card-soft !p-3 flex flex-col items-center justify-center gap-1 hover:bg-subtle transition-colors">
+                    <Clock size={16} className="text-secondary mb-1" />
+                    <span className="text-[10px] text-secondary uppercase font-bold tracking-wider">{t('dashboard.stats.peakTime')}</span>
+                    <span className="text-lg font-bold text-primary">{peakTimeStr}</span>
+                </div>
+                <div className="card-soft !p-3 flex flex-col items-center justify-center gap-1 hover:bg-subtle transition-colors">
+                    <Zap size={16} className="text-secondary mb-1" />
+                    <span className="text-[10px] text-secondary uppercase font-bold tracking-wider">{t('dashboard.stats.activeCaffeine')}</span>
+                    <span className="text-lg font-bold text-primary">{activeCaffeine}<span className="text-xs text-secondary ml-0.5">mg</span></span>
+                </div>
+                <div className="card-soft !p-3 flex flex-col items-center justify-center gap-1 hover:bg-subtle transition-colors">
+                    <Coffee size={16} className="text-secondary mb-1" />
+                    <span className="text-[10px] text-secondary uppercase font-bold tracking-wider">{t('dashboard.stats.dailyTotal')}</span>
+                    <span className="text-lg font-bold text-primary">{totalCaffeineToday}<span className="text-xs text-secondary ml-0.5">mg</span></span>
+                </div>
+            </div>
+
+            {/* Insight / Notification (Floating Pill) */}
+            <div className="flex flex-col items-center gap-2 px-4">
+                {/* Only show critical warnings or valid recommendations */}
+                {isOverLimit && (
+                    <div className="card-soft flex items-center gap-2 py-3 px-4 shadow-sm w-full bg-red-500/5 border-red-500/20">
+                        <Bell size={16} className="text-red-500 flex-shrink-0" />
+                        <span className="text-xs sm:text-sm font-bold text-red-500 truncate">制限超過 ({totalCaffeineToday}mg)</span>
+                    </div>
+                )}
+
+                {!isOverLimit && recommendation && showNotification && (
+                    <div
+                        className="card-soft flex items-center gap-3 py-3 px-4 shadow-sm cursor-pointer w-full hover:bg-subtle transition-colors"
+                        onClick={() => setShowNotification(false)}
+                    >
+                        <div className="p-1.5 bg-accent-primary/10 rounded-full text-accent-primary">
+                            <Zap size={14} className="flex-shrink-0" />
+                        </div>
+                        <span className="text-xs sm:text-sm font-medium truncate flex-1">{t('dashboard.recommendation')}: {recommendation.time} ({recommendation.amount}mg)</span>
+                        <X size={14} className="text-secondary ml-auto flex-shrink-0 hover:text-primary" />
+                    </div>
+                )}
+            </div>
+
+            {/* Smart Recommendation Card */}
+            {smartRecommendations.length > 0 && (
+                <div className="px-4 pb-4">
+                    <SmartRecommendationCard
+                        recommendation={smartRecommendations[0]}
+                        onRecordNow={() => followRecommendation(smartRecommendations[0])}
+                        onRemindLater={() => {
+                            dismissRecommendation(smartRecommendations[0].id);
+                            alert('30分後にリマインダーを設定しました（簡易実装）');
+                        }}
+                        onDismiss={() => dismissRecommendation(smartRecommendations[0].id)}
+                    />
+                </div>
+            )}
 
             {/* Floating Action Button */}
             <button

@@ -44,6 +44,11 @@ const resources = {
                         boost: 'ブースト',
                         predicted: '予測'
                     }
+                },
+                stats: {
+                    peakTime: 'ピーク予想',
+                    activeCaffeine: '有効カフェイン',
+                    dailyTotal: '合計摂取'
                 }
             },
 
@@ -217,7 +222,12 @@ const resources = {
                     overLimit: 'Over Limit'
                 },
                 recommendation: 'Recommended',
-                limitWarning: 'Over Limit'
+                limitWarning: 'Over Limit',
+                stats: {
+                    peakTime: 'Est. Peak',
+                    activeCaffeine: 'Active Caff.',
+                    dailyTotal: 'Total Intake'
+                }
             },
 
             // Intake
