@@ -87,7 +87,12 @@ const resources = {
                 totalIntake: '合計摂取量',
                 history: 'HISTORY',
                 noRecords: '記録がありません',
-                addSuggestion: 'カフェインを追加してここに表示'
+                addSuggestion: 'カフェインを追加してここに表示',
+                empty: {
+                    title: '記録がありません',
+                    description: '最初のコーヒーを追加して、\nカフェイン管理を始めましょう',
+                    action: '最初のコーヒーを追加'
+                }
             },
 
             // Profile
@@ -250,7 +255,12 @@ const resources = {
                 totalIntake: 'Total Intake',
                 history: 'HISTORY',
                 noRecords: 'No records yet',
-                addSuggestion: 'Add some caffeine to see it here'
+                addSuggestion: 'Add some caffeine to see it here',
+                empty: {
+                    title: 'No records yet',
+                    description: 'Add your first coffee and start managing your caffeine.',
+                    action: 'Add First Coffee'
+                }
             },
 
             // Profile

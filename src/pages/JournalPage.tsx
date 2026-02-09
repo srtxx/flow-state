@@ -47,14 +47,20 @@ export default function JournalPage() {
                 <h3 className="text-sm font-bold tracking-widest mb-4 px-1 uppercase text-secondary">{t('journal.history')}</h3>
                 <div className="relative pl-6 sm:pl-8 ml-3 sm:ml-4 space-y-8 sm:space-y-10 my-8 journal-timeline">
                     {sortedRecords.length === 0 ? (
-                        <div className="flex flex-col items-start pt-2">
-                            <p className="text-secondary text-sm mb-4">{t('journal.noRecords')}</p>
+                        <div className="flex flex-col items-center justify-center py-12 text-center animate-in fade-in duration-500">
+                            <div className="w-20 h-20 bg-subtle rounded-full flex items-center justify-center mb-6 shadow-sm border border-white/5">
+                                <Coffee size={32} className="text-secondary opacity-50" strokeWidth={1.5} />
+                            </div>
+                            <h3 className="text-lg font-bold text-primary mb-2">{t('journal.empty.title')}</h3>
+                            <p className="text-secondary text-sm mb-8 leading-relaxed whitespace-pre-line max-w-[200px]">
+                                {t('journal.empty.description')}
+                            </p>
                             <button
                                 onClick={() => setShowIntakeModal(true)}
-                                className="flex items-center gap-2 text-primary hover:text-white transition-colors text-sm font-medium"
+                                className="btn-primary flex items-center gap-2 px-6 py-3 rounded-2xl shadow-lg hover:shadow-xl transition-all hover:scale-[1.02] active:scale-[0.98]"
                             >
-                                <PlusCircle size={18} />
-                                <span>{t('intake.record')}</span>
+                                <PlusCircle size={20} />
+                                <span className="font-bold">{t('journal.empty.action')}</span>
                             </button>
                         </div>
                     ) : (

@@ -6,7 +6,7 @@
 
 ## Tasks
 
-- [-] 1. プロジェクト構造とコア型定義のセットアップ
+- [x] 1. プロジェクト構造とコア型定義のセットアップ
   - ディレクトリ構造を作成（src/, tests/, config/）
   - types.tsにすべてのインターフェースと型を定義
   - package.jsonとtsconfig.jsonを設定
@@ -14,7 +14,7 @@
   - _Requirements: 全要件に共通_
 
 - [ ] 2. 設定管理の実装
-  - [~] 2.1 ConfigManagerクラスを実装
+  - [-] 2.1 ConfigManagerクラスを実装
     - デフォルト設定の定義
     - JSON設定ファイルの読み込み
     - 設定の検証ロジック
