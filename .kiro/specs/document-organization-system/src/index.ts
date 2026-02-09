@@ -10,8 +10,8 @@ export * from './types';
 export { ConfigManager } from './config';
 export { Scanner } from './scanner';
 export { MetadataCollector } from './metadata';
+export { ReferenceAnalyzer } from './analyzer';
 
 // Note: Implementation modules will be exported here as they are created
-// export { ReferenceAnalyzer } from './analyzer';
 // export { ImportanceEvaluator, DuplicateChecker, StatusAssigner } from './evaluator';
 // export { ReportGenerator } from './reporter';

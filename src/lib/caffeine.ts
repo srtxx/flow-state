@@ -148,7 +148,7 @@ export function generateAlertnessData(
     const data: AlertnessDataPoint[] = [];
 
     // Start from 6:00 instead of wake time
-    const startHour = 6;
+    const startHour = CHART_START_HOUR;
 
     for (let h = 0; h < 24; h += 0.5) {
         const actualHour = (startHour + h) % 24;

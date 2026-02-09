@@ -15,90 +15,113 @@ interface IntakeModalProps {
     onAdd: (drink: DrinkType, amount: number, time: string) => void;
 }
 
-// --- Custom Icon Components ---
-
-// --- Custom Icon Components ---
+// --- Minimalist Homage Icons ---
 
 const CoffeeIconS = () => (
-    <div className="relative flex items-center justify-center w-10 h-14 transition-transform duration-300 group-hover:-translate-y-1">
-        {/* Boss Homage: Short Can - Minimalist Gold/Brown */}
-        <svg width="40" height="56" viewBox="0 0 40 56" fill="none" xmlns="http://www.w3.org/2000/svg" className="drop-shadow-md">
-            {/* Can Body */}
-            <rect x="4" y="2" width="32" height="52" rx="2" fill="url(#bossGradient)" stroke="#854d0e" strokeWidth="1.5" />
-            {/* Top Rim */}
-            <path d="M4 8H36" stroke="#854d0e" strokeWidth="1.5" strokeOpacity="0.5" />
-            {/* Dark Band with Gold Accent */}
-            <rect x="4" y="28" width="32" height="12" fill="#1e1b4b" opacity="0.9" />
-            <rect x="14" y="33" width="12" height="2" rx="1" fill="#facc15" />
-            {/* Pipe Icon Hint */}
-            <path d="M26 16C26 18.2091 24.2091 20 22 20H18V12H22C24.2091 12 26 13.7909 26 16Z" fill="#78350f" fillOpacity="0.3" />
-
-            <defs>
-                <linearGradient id="bossGradient" x1="20" y1="2" x2="20" y2="54" gradientUnits="userSpaceOnUse">
-                    <stop stopColor="#EAB308" />
-                    <stop offset="0.5" stopColor="#CA8A04" />
-                    <stop offset="1" stopColor="#EAB308" />
-                </linearGradient>
-            </defs>
-        </svg>
+    <div className="relative flex items-center justify-center w-9 h-9">
+        {/* Boss Homage: Rainbow Mountain Blend Style */}
+        <div className="w-full h-full rounded-sm shadow-sm flex flex-col overflow-hidden border border-gray-400/50">
+            {/* Top Blue Band */}
+            <div className="w-full h-2.5 bg-[#003366]" />
+            {/* Middle White/Cream Section with Logo */}
+            <div className="flex-1 bg-[#F5F5DC] flex items-center justify-center relative">
+                <div className="w-5 h-3 bg-[#8B4513] rounded-full opacity-20 absolute" />
+                {/* Pipe Man Silhouette Hint */}
+                <div className="w-4 h-4 bg-[#003366] rounded-full z-10 flex items-center justify-center">
+                    <div className="w-3 h-3 bg-[#F5F5DC] rounded-full flex items-center justify-center">
+                        <div className="w-2 h-2 bg-[#003366] rounded-full" />
+                    </div>
+                </div>
+            </div>
+            {/* Bottom Rainbow Band */}
+            {/* Orange -> Yellow -> Green gradient */}
+            <div className="w-full h-2.5 bg-[linear-gradient(90deg,#FF8C00,#FFD700,#32CD32)]" />
+        </div>
+        {/* Top Rim (Gold) */}
+        <div className="absolute -top-0.5 w-7 h-1 bg-[#DAA520] rounded-sm border border-[#B8860B]" />
+        {/* Bottom Rim (Gold) */}
+        <div className="absolute -bottom-0.5 w-7 h-0.5 bg-[#DAA520] rounded-sm opacity-80" />
     </div>
 );
 
 const CoffeeIconL = () => (
-    <div className="relative flex items-center justify-center w-12 h-16 transition-transform duration-300 group-hover:-translate-y-1">
-        {/* Starbucks Homage: Tall Cup - Clean White/Green */}
-        <svg width="48" height="64" viewBox="0 0 48 64" fill="none" xmlns="http://www.w3.org/2000/svg" className="drop-shadow-sm">
-            {/* Cup Body */}
-            <path d="M10 12L12 56C12.2 59 14 60 24 60C34 60 35.8 59 36 56L38 12H10Z" fill="#F8FAFC" stroke="#CBD5E1" strokeWidth="1.5" />
-            {/* Lid */}
-            <path d="M8 12H40V8C40 6.89543 39.1046 6 38 6H10C8.89543 6 8 6.89543 8 8V12Z" fill="white" stroke="#CBD5E1" strokeWidth="1.5" />
-            {/* Sleeve/Logo Area */}
-            <circle cx="24" cy="36" r="8" fill="#15803d" />
-            <path d="M24 32L25 35H28L25.5 37L26.5 40L24 38L21.5 40L22.5 37L20 35H23L24 32Z" fill="white" />
-        </svg>
+    <div className="relative flex items-center justify-center w-8 h-12">
+        {/* Starbucks Homage: Classic White Cup */}
+        <div className="w-full h-full bg-white rounded-sm rounded-b-md border border-gray-200 shadow-sm flex flex-col items-center overflow-hidden">
+            {/* Top White Rim Area */}
+            <div className="w-full h-1 bg-gray-50 border-b border-gray-100" />
+
+            {/* Main Body */}
+            <div className="flex-1 w-full flex items-center justify-center relative bg-white">
+                {/* Sleeve */}
+                <div className="absolute w-full h-6 bg-[#C19A6B] flex items-center justify-center border-t border-b border-[#A08055]">
+                    {/* Siren Logo (Green Circle + White Shapes) */}
+                    <div className="w-5 h-5 rounded-full bg-[#00704A] flex items-center justify-center border border-white/20">
+                        {/* Siren Head/Star Hint */}
+                        <div className="w-3 h-3 bg-white rounded-full opacity-20" />
+                        <div className="absolute text-[6px] text-white font-bold leading-none select-none">★</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        {/* Lid */}
+        <div className="absolute -top-1.5 w-9 h-2 bg-white rounded-sm border border-gray-200 shadow-sm flex items-center justify-center">
+            <div className="w-1 h-1 bg-black/10 rounded-full" />
+        </div>
     </div>
 );
 
 const EnergyIconS = () => (
-    <div className="relative flex items-center justify-center w-10 h-16 transition-transform duration-300 group-hover:-translate-y-1">
-        {/* Red Bull Homage: Slim Can - Silver/Blue Geometric */}
-        <svg width="40" height="64" viewBox="0 0 40 64" fill="none" xmlns="http://www.w3.org/2000/svg" className="drop-shadow-md">
-            {/* Can Body */}
-            <rect x="6" y="4" width="28" height="56" rx="3" fill="url(#rbGradient)" stroke="#94a3b8" strokeWidth="1.5" />
-            {/* Top Rim */}
-            <path d="M6 10H34" stroke="#94a3b8" strokeWidth="1.5" />
-            {/* Blue Geometric Pattern */}
-            <path d="M6 4L34 60V4H6Z" fill="#2563EB" fillOpacity="0.1" />
-            <path d="M6 60L34 4V60H6Z" fill="#1D4ED8" fillOpacity="0.1" />
-            {/* Red Accent (Sun/Bull abstract) */}
-            <circle cx="20" cy="32" r="5" fill="#DC2626" />
-            <path d="M16 32H24" stroke="#FECACA" strokeWidth="1" strokeOpacity="0.5" />
+    <div className="relative flex items-center justify-center w-5 h-14">
+        {/* RedBull Homage: The Classic */}
+        <div className="w-full h-full bg-[#C0BFBF] rounded-sm border border-gray-400 shadow-sm overflow-hidden flex flex-col relative">
+            {/* Blue / Silver Quadrants - Using CSS linear-gradient for sharp diagonal */}
+            {/* Top Right Blue */}
+            <div className="absolute top-0 right-0 w-full h-1/2 bg-[#004C6C] transform -skew-y-[20deg] origin-bottom-right scale-[1.2]" />
+            {/* Bottom Left Blue */}
+            <div className="absolute bottom-0 left-0 w-full h-1/2 bg-[#004C6C] transform -skew-y-[20deg] origin-top-left scale-[1.2]" />
 
-            <defs>
-                <linearGradient id="rbGradient" x1="6" y1="4" x2="34" y2="60" gradientUnits="userSpaceOnUse">
-                    <stop stopColor="#F1F5F9" />
-                    <stop offset="1" stopColor="#E2E8F0" />
-                </linearGradient>
-            </defs>
-        </svg>
+            {/* Yellow Sun Circle */}
+            <div className="absolute inset-0 flex items-center justify-center z-10">
+                <div className="w-3.5 h-3.5 rounded-full bg-[#FFD300] shadow-sm" />
+            </div>
+            {/* Red Bulls (Two opposing shapes) */}
+            <div className="absolute inset-0 flex items-center justify-center z-20 gap-[1px]">
+                <div className="w-1.5 h-1.5 bg-[#E21B4D] rounded-sm transform skew-x-12" />
+                <div className="w-1.5 h-1.5 bg-[#E21B4D] rounded-sm transform -skew-x-12" />
+            </div>
+        </div>
+        {/* Silver Rim */}
+        <div className="absolute -top-0.5 w-4 h-1 bg-[#C0BFBF] rounded-sm border border-gray-400" />
     </div>
 );
 
 const EnergyIconL = () => (
-    <div className="relative flex items-center justify-center w-12 h-16 transition-transform duration-300 group-hover:-translate-y-1">
-        {/* Monster Homage: Sleek Can - Matte Black/Neon Green */}
-        <svg width="48" height="64" viewBox="0 0 48 64" fill="none" xmlns="http://www.w3.org/2000/svg" className="drop-shadow-md">
-            {/* Can Body */}
-            <rect x="8" y="2" width="32" height="60" rx="4" fill="#18181b" stroke="#3f3f46" strokeWidth="1.5" />
-            {/* Top Rim */}
-            <path d="M8 8H40" stroke="#3f3f46" strokeWidth="1.5" />
-            {/* Scratch Marks */}
-            <path d="M19 18L18 46" stroke="#22c55e" strokeWidth="2.5" strokeLinecap="round" />
-            <path d="M24 16L24 48" stroke="#22c55e" strokeWidth="2.5" strokeLinecap="round" />
-            <path d="M29 18L30 46" stroke="#22c55e" strokeWidth="2.5" strokeLinecap="round" />
-            {/* Tab Accent */}
-            <rect x="22" y="2" width="4" height="6" rx="1" fill="#71717a" />
-        </svg>
+    <div className="relative flex items-center justify-center w-10 h-14">
+        {/* Monster Homage: The Beast */}
+        <div className="w-full h-full bg-[#101010] rounded-sm border border-[#222] shadow-sm flex items-center justify-center overflow-hidden relative">
+            {/* Neon Green Claw Marks (M) */}
+            <div className="flex z-10 items-start pt-1">
+                {/* Left Claw */}
+                <div className="w-[3px] h-6 bg-[#95D600] transform -skew-x-[15deg] rounded-sm shadow-[0_0_6px_rgba(149,214,0,0.6)]"
+                    style={{ clipPath: 'polygon(0 0, 100% 0, 80% 100%, 20% 100%)' }} />
+                {/* Middle Claw */}
+                <div className="w-[3px] h-7 bg-[#95D600] transform mx-[2px] -translate-y-1 rounded-sm shadow-[0_0_6px_rgba(149,214,0,0.6)]"
+                    style={{ clipPath: 'polygon(10% 0, 90% 0, 100% 100%, 0 100%)' }} />
+                {/* Right Claw */}
+                <div className="w-[3px] h-6 bg-[#95D600] transform skew-x-[15deg] rounded-sm shadow-[0_0_6px_rgba(149,214,0,0.6)]"
+                    style={{ clipPath: 'polygon(20% 0, 80% 0, 100% 100%, 0 100%)' }} />
+            </div>
+
+            {/* "ENERGY" Text Hint */}
+            <div className="absolute bottom-2 left-0 w-full flex justify-center opacity-30">
+                <div className="w-6 h-0.5 bg-white rounded-full" />
+            </div>
+        </div>
+        {/* Black Rim */}
+        <div className="absolute -top-0.5 w-8 h-1 bg-[#101010] rounded-sm border border-[#333]" />
+        {/* Green Tab */}
+        <div className="absolute -top-1 w-2 h-1.5 bg-[#95D600] rounded-sm opacity-80" />
     </div>
 );
 
