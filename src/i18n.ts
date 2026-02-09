@@ -137,13 +137,13 @@ const resources = {
 
             // Smart Recommendations
             smartRecommendation: {
-                title: 'スマート推奨',
-                optimalTiming: '最適タイミング',
+                title: 'パフォーマンス最適化の提案',
+                optimalTiming: '推奨摂取タイミング',
                 recommendedAmount: '推奨量',
                 predictedEffect: '予測効果',
                 current: '現在',
                 predicted: '予測',
-                reasons: '理由',
+                reasons: '推奨理由',
                 confidence: '信頼度',
                 actions: {
                     recordNow: '今すぐ記録',
@@ -152,8 +152,8 @@ const resources = {
                 },
                 types: {
                     afternoonDip: 'アフタヌーンディップ対策',
-                    performanceMax: 'パフォーマンス最大化',
-                    general: '一般推奨'
+                    performanceMax: '集中維持ゴールデンタイム',
+                    general: 'パフォーマンス維持'
                 }
             },
 

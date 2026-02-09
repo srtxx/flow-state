@@ -22,7 +22,7 @@ export default function SmartRecommendationCard({
         recommendedAmount,
         reasons,
         predictedEffect,
-        confidenceScore,
+
         type
     } = recommendation;
 
@@ -31,7 +31,7 @@ export default function SmartRecommendationCard({
     // プログレスバーの幅を計算
     const currentWidth = `${currentAlertness}%`;
     const predictedWidth = `${predictedAlertness}%`;
-    const confidenceWidth = `${confidenceScore}%`;
+
 
     // 推奨タイプのラベルを取得
     const getTypeLabel = () => {
@@ -169,35 +169,15 @@ export default function SmartRecommendationCard({
                         {t('smartRecommendation.reasons')}
                     </h3>
                 </div>
-                <ul className="ml-7 space-y-1">
+                <ul className="ml-7 space-y-2">
                     {reasons.map((reason, index) => (
-                        <li key={index} className="text-sm text-secondary flex items-start gap-1.5">
-                            <span className="text-accent-primary mt-0.5 flex-shrink-0" aria-hidden="true">•</span>
-                            <span>{reason}</span>
+                        <li key={index} className="text-sm text-secondary flex items-start gap-2">
+                            <span className="text-accent-primary mt-1 flex-shrink-0 w-1.5 h-1.5 rounded-full bg-accent-primary" aria-hidden="true" />
+                            <span className="leading-relaxed">{reason}</span>
                         </li>
                     ))}
                 </ul>
             </section>
-
-            {/* 信頼度 */}
-            <div className="mb-4">
-                <div className="flex justify-between text-xs mb-1.5">
-                    <span className="text-secondary">
-                        {t('smartRecommendation.confidence')}
-                    </span>
-                    <span className="font-semibold">{confidenceScore}%</span>
-                </div>
-                <div className="w-full h-1 bg-subtle rounded-full overflow-hidden">
-                    <div
-                        className="h-full bg-accent-primary rounded-full transition-all duration-300"
-                        style={{ width: confidenceWidth }}
-                        role="progressbar"
-                        aria-valuenow={confidenceScore}
-                        aria-valuemin={0}
-                        aria-valuemax={100}
-                    />
-                </div>
-            </div>
 
             {/* アクションボタン */}
             <div className="flex gap-2">

@@ -95,7 +95,7 @@ export default function ProfilePage() {
                 </div>
 
                 {/* Support Section (Third Priority) - Flex 1 */}
-                <div className="flex-[1] min-h-0 flex flex-col mb-4">
+                <div className="flex-[1] min-h-0 flex flex-col mb-24">
                     <a
                         href="https://buymeacoffee.com/bulletlifew"
                         target="_blank"

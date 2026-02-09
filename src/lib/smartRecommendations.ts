@@ -157,9 +157,9 @@ export function generateSmartRecommendations(
             recommendedTime: formatTime(adjustedOptimalTime),
             recommendedAmount,
             reasons: [
-                `${dip.dipStart}頃に覚醒度の谷が予測されます`,
-                '午後のパフォーマンスが最大化されます',
-                'カフェインのピーク時間と谷のタイミングが一致します'
+                `${dip.dipStart}頃に予測される覚醒度の低下（アフタヌーンディップ）を予防します`,
+                '摂取後30-45分で血中濃度が最大になり、眠気のピークと相殺します',
+                '午後のパフォーマンス低下を最小限に抑えます'
             ],
             predictedEffect: {
                 currentAlertness: Math.round(currentAlertness),
@@ -190,8 +190,8 @@ export function generateSmartRecommendations(
             recommendedTime: formatTime(recommendedHour),
             recommendedAmount,
             reasons: [
-                '集中力のピークを維持できます',
-                '適切なタイミングでの摂取が効果的です'
+                '摂取後30分でカフェインの効果が現れ始め、集中力が向上します',
+                '就寝時刻の9時間前までは、睡眠に影響を与えずにパフォーマンスを維持できます'
             ],
             predictedEffect: {
                 currentAlertness: Math.round(currentAlertness),

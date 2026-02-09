@@ -51,6 +51,15 @@ export default function DashboardPage() {
                     <div className="status-dot" style={{ backgroundColor: statusColor }} />
                     <span className="text-xs sm:text-sm">{statusText}</span>
                 </div>
+
+                {/* Rapid Intake Badge */}
+                {/* TODO: Implement rapid intake alert feature
+                {rapidIntakeAlert && (
+                    <div className="mt-3">
+                        <RapidIntakeBadge />
+                    </div>
+                )}
+                */}
             </div>
 
             {/* Insight / Notification (Floating Pill) */}
