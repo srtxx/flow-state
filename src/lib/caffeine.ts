@@ -297,7 +297,8 @@ export function getAvoidAfterTime(expectedSleepTime: string = '23:00'): string {
 
 /**
  * Check if caffeine intake will affect sleep
- * Returns true if any caffeine (>= 1mg) will remain at bedtime
+ * Returns true if caffeine >= 25mg will remain at bedtime
+ * Research suggests that caffeine levels below 25mg have minimal impact on sleep quality
  */
 export function willAffectSleep(intakeTime: string, expectedSleepTime: string): boolean {
     const intakeHour = timeToDecimalHours(intakeTime);
@@ -338,7 +339,8 @@ export function estimateCaffeineAtSleep(
 }
 
 /**
- * Check if caffeine will remain at sleep time (>= 1mg)
+ * Check if caffeine will remain at sleep time (>= 25mg)
+ * Research suggests that caffeine levels below 25mg at bedtime have minimal impact on sleep quality
  */
 export function willHaveCaffeineAtSleep(
     amount: number,
@@ -346,5 +348,5 @@ export function willHaveCaffeineAtSleep(
     sleepTime: string
 ): boolean {
     const remaining = estimateCaffeineAtSleep(amount, intakeTime, sleepTime);
-    return remaining >= 1;
+    return remaining >= 25;
 }

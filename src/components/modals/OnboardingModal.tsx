@@ -56,7 +56,7 @@ export default function OnboardingModal({ isOpen, onComplete }: OnboardingModalP
                 ) : (
                     <div className="flex flex-col items-center gap-4 sm:gap-6 animate-in slide-in-from-right duration-300">
                         <h2 className="text-xl sm:text-2xl font-bold">{t('onboarding.sleepGoal')}</h2>
-                        <p className="text-secondary text-xs sm:text-sm px-2">{t('onboarding.sleepQuestion')}</p>
+
 
                         <div className="relative w-full py-6 sm:py-8">
                             <p className="text-5xl sm:text-6xl font-light mb-3 sm:mb-4">{avgHours}<span className="text-lg sm:text-xl text-gray-400 ml-1">時間</span></p>
