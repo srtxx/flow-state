@@ -12,6 +12,7 @@ const resources = {
             edit: '編集',
             add: '追加',
             close: '閉じる',
+            confirm: '確認',
 
             // Navigation
             nav: {
@@ -42,7 +43,10 @@ const resources = {
                 amount: '量 (mg)',
                 time: '時刻',
                 record: '記録',
-                recorded: '記録しました'
+                recorded: '記録しました',
+                sleepImpactWarning: '睡眠への影響',
+                sleepImpactMessage: '就寝時刻（{{sleepTime}}）まで{{hours}}時間。約{{amount}}mgのカフェインが体内に残ります。',
+                acknowledgeImpact: '影響を理解しました'
             },
 
             // Sleep
@@ -113,6 +117,7 @@ const resources = {
             edit: 'Edit',
             add: 'Add',
             close: 'Close',
+            confirm: 'Confirm',
 
             // Navigation
             nav: {
@@ -143,7 +148,10 @@ const resources = {
                 amount: 'Amount (mg)',
                 time: 'Time',
                 record: 'Record',
-                recorded: 'Recorded'
+                recorded: 'Recorded',
+                sleepImpactWarning: 'Sleep Impact',
+                sleepImpactMessage: '{{hours}} hours until bedtime ({{sleepTime}}). ~{{amount}}mg caffeine will remain.',
+                acknowledgeImpact: 'I understand the impact'
             },
 
             // Sleep

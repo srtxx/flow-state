@@ -8,6 +8,7 @@ interface ConfirmDialogProps {
     title?: string;
     message: string;
     isDestructive?: boolean;
+    confirmText?: string;
 }
 
 export default function ConfirmDialog({
@@ -16,7 +17,8 @@ export default function ConfirmDialog({
     onConfirm,
     title,
     message,
-    isDestructive = false
+    isDestructive = false,
+    confirmText
 }: ConfirmDialogProps) {
     const { t } = useTranslation();
 
@@ -64,7 +66,7 @@ export default function ConfirmDialog({
                         >
                             {isDestructive && <X size={16} className="sm:w-[18px] sm:h-[18px]" />}
                             {!isDestructive && <Check size={16} className="sm:w-[18px] sm:h-[18px]" />}
-                            <span>{t('confirm')}</span>
+                            <span>{confirmText || t('confirm')}</span>
                         </button>
                     </div>
                 </div>

@@ -15,7 +15,7 @@ export interface IntakeRecord {
     timestamp: number; // Unix timestamp for ordering
 }
 
-export type DrinkType = 'COFFEE' | 'ESPRESSO' | 'ENERGY' | 'TEA' | 'CUSTOM';
+export type DrinkType = 'COFFEE S' | 'COFFEE L' | 'ENERGY S' | 'ENERGY L' | 'CUSTOM';
 
 export interface DrinkOption {
     name: DrinkType;

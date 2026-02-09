@@ -19,7 +19,7 @@ export default function ProfilePage() {
     // Determine trend icon and color
     const getTrendDisplay = (change: number | null) => {
         if (change === null) return null;
-        
+
         if (change > 0) {
             return {
                 icon: <TrendingUp size={12} />,
@@ -44,68 +44,49 @@ export default function ProfilePage() {
     const trendDisplay = getTrendDisplay(weeklyStats.weeklyChange);
 
     return (
-        <div className="page profile-page pb-24 pt-8">
+        <div className="page profile-page pb-24 pt-4 sm:pt-6">
             <div className="px-4 sm:px-6 mb-6 sm:mb-8 flex justify-between items-center gap-2">
                 <div className="min-w-0 flex-1">
-                    <h2 className="text-xl sm:text-2xl font-bold tracking-tight truncate">{t('profile.title')}</h2>
+                    <h2 className="text-xl sm:text-2xl font-bold tracking-tight truncate text-primary">{t('profile.title')}</h2>
                     <p className="text-secondary text-xs sm:text-sm truncate">{t('profile.subtitle')}</p>
                 </div>
                 <button
-                    className="p-2 rounded-full hover:bg-gray-100 transition-colors flex-shrink-0"
+                    className="p-2 rounded-full hover:bg-subtle transition-colors flex-shrink-0 text-secondary hover:text-primary"
                     onClick={() => showToast('設定機能は開発中です', 'info')}
                 >
-                    <Settings className="text-secondary" size={20} />
+                    <Settings size={20} />
                 </button>
             </div>
 
-            {/* Avoid After Card (High Priority) */}
-            <div className="mx-4 mb-6 p-5 sm:p-6 rounded-3xl bg-[#171717] text-white shadow-xl relative overflow-hidden">
-                <div className="relative z-10">
-                    <p className="text-xs font-bold tracking-widest text-gray-400 mb-2 uppercase">{t('profile.limitAfter')}</p>
-                    <div className="flex items-baseline gap-2">
-                        <span className="text-4xl sm:text-5xl font-light tracking-tighter">{avoidAfterTime}</span>
-                        <span className="text-sm text-gray-400 font-medium">PM</span>
-                    </div>
-                    <p className="text-xs text-gray-500 mt-3 sm:mt-4 max-w-[85%] sm:max-w-[80%] leading-relaxed">
-                        {t('profile.limitDescription')}
-                    </p>
-                </div>
-                <Clock
-                    className="absolute -bottom-4 -right-4 text-white opacity-5"
-                    size={120}
-                    strokeWidth={1}
-                />
-            </div>
-
-            {/* Sleep Section */}
+            {/* Sleep Section (First Priority) */}
             <div className="mx-4 mb-6">
                 <h3 className="text-sm font-bold tracking-widest text-secondary mb-4 px-2 uppercase">{t('profile.sleepAnalysis')}</h3>
                 <div className="card-soft">
-                    <div className="flex justify-between items-center mb-5 sm:mb-6">
+                    <div className="flex justify-between items-center mb-6">
                         <div className="flex items-center gap-2">
-                            <Moon size={16} className="text-gray-800 sm:w-[18px] sm:h-[18px]" />
-                            <span className="font-bold text-xs sm:text-sm">{t('profile.lastNight')}</span>
+                            <Moon size={16} className="text-secondary" />
+                            <span className="font-bold text-xs sm:text-sm text-primary">{t('profile.lastNight')}</span>
                         </div>
                         <button
                             onClick={onSleepClick}
-                            className="text-xs font-bold px-2.5 sm:px-3 py-1 bg-gray-100 rounded-full hover:bg-gray-200 transition-colors"
+                            className="text-xs font-bold px-3 py-1.5 bg-subtle rounded-full text-secondary hover:text-primary transition-colors hover:bg-white/5 border border-white/5"
                         >
                             {t('edit')}
                         </button>
                     </div>
 
-                    <div className="grid grid-cols-2 gap-6 sm:gap-8 mb-5 sm:mb-6">
+                    <div className="grid grid-cols-2 gap-8 mb-6">
                         <div>
                             <p className="text-xs text-secondary mb-1 uppercase tracking-wider">{t('sleep.duration')}</p>
-                            <p className="text-2xl sm:text-3xl font-light">{actualSleepHours.toFixed(1)}<span className="text-xs sm:text-sm text-secondary ml-1">h</span></p>
+                            <p className="text-2xl sm:text-3xl font-light text-primary">{actualSleepHours.toFixed(1)}<span className="text-xs sm:text-sm text-secondary ml-1">h</span></p>
                         </div>
                         <div>
                             <p className="text-xs text-secondary mb-1 uppercase tracking-wider">{t('sleep.target')}</p>
-                            <p className="text-2xl sm:text-3xl font-light">{sleepData.avgSleepHours}<span className="text-xs sm:text-sm text-secondary ml-1">h</span></p>
+                            <p className="text-2xl sm:text-3xl font-light text-primary">{sleepData.avgSleepHours}<span className="text-xs sm:text-sm text-secondary ml-1">h</span></p>
                         </div>
                     </div>
 
-                    <div className={`p-3 sm:p-4 rounded-xl text-xs sm:text-sm ${isSleepSufficient ? 'bg-green-50 text-green-800' : 'bg-orange-50 text-orange-800'}`}>
+                    <div className={`p-4 rounded-xl text-xs sm:text-sm border ${isSleepSufficient ? 'bg-green-500/5 text-green-400 border-green-500/20' : 'bg-orange-500/5 text-orange-400 border-orange-500/20'}`}>
                         {isSleepSufficient ? (
                             <div className="flex items-center gap-2">
                                 <span className="font-bold">{t('profile.goodSleep')}</span>
@@ -121,15 +102,55 @@ export default function ProfilePage() {
                 </div>
             </div>
 
-            {/* Stats Overview */}
+            {/* Avoid After Card (Second Priority) */}
+            <div className="mx-4 mb-6 p-6 rounded-3xl bg-card border border-white/10 shadow-lg relative overflow-hidden">
+                <div className="relative z-10">
+                    <p className="text-xs font-bold tracking-widest text-secondary mb-2 uppercase">{t('profile.limitAfter')}</p>
+                    <div className="flex items-baseline gap-2">
+                        <span className="text-5xl font-light tracking-tighter text-primary">{avoidAfterTime}</span>
+                        <span className="text-sm text-secondary font-medium">PM</span>
+                    </div>
+                    <p className="text-xs text-secondary mt-4 max-w-[85%] leading-relaxed opacity-80">
+                        {t('profile.limitDescription')}
+                    </p>
+                </div>
+                <Clock
+                    className="absolute -bottom-4 -right-4 text-white opacity-[0.03]"
+                    size={140}
+                    strokeWidth={1}
+                />
+            </div>
+
+            {/* Support Section (Third Priority) */}
+            <div className="mx-4 mb-6">
+                <a
+                    href="https://buymeacoffee.com/bulletlifew"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="card-soft flex items-center justify-between p-4 hover:bg-subtle transition-colors cursor-pointer group border-yellow-400/30"
+                >
+                    <div className="flex items-center gap-3 min-w-0 flex-1">
+                        <div className="p-2 bg-yellow-400/10 rounded-full flex-shrink-0 text-yellow-400 group-hover:bg-yellow-400 group-hover:text-yellow-900 transition-colors">
+                            <Coffee size={18} />
+                        </div>
+                        <div className="min-w-0 flex-1">
+                            <p className="font-bold text-xs sm:text-sm text-primary truncate">開発者をサポート</p>
+                            <p className="text-[10px] sm:text-xs text-secondary truncate">Buy Me a Coffee ☕</p>
+                        </div>
+                    </div>
+                    <Heart size={16} className="text-pink-500/70 flex-shrink-0 ml-2 group-hover:text-pink-500" />
+                </a>
+            </div>
+
+            {/* Stats Overview (Bottom) */}
             <div className="mx-4">
                 <h3 className="text-sm font-bold tracking-widest text-secondary mb-4 px-2 uppercase">{t('profile.weeklyTrend')}</h3>
                 <div className="grid grid-cols-2 gap-3 sm:gap-4">
-                    <div className="card-soft p-3 sm:p-4">
+                    <div className="card-soft p-4">
                         <p className="text-xs text-secondary mb-2 truncate">{t('profile.avgAlertness')}</p>
                         {weeklyStats.thisWeekAvg !== null ? (
                             <>
-                                <p className="text-xl sm:text-2xl font-semibold">{weeklyStats.thisWeekAvg}</p>
+                                <p className="text-xl sm:text-2xl font-semibold text-primary">{weeklyStats.thisWeekAvg}</p>
                                 {trendDisplay && (
                                     <div className={`flex items-center gap-1 text-xs mt-2 font-medium ${trendDisplay.color}`}>
                                         {trendDisplay.icon}
@@ -140,49 +161,27 @@ export default function ProfilePage() {
                         ) : (
                             <div className="text-xs sm:text-sm text-secondary mt-2">
                                 <p>データ不足</p>
-                                <p className="text-[10px] sm:text-xs mt-1">数日使用すると表示されます</p>
+                                <p className="text-[10px] sm:text-xs mt-1 opacity-60">数日使用すると表示されます</p>
                             </div>
                         )}
                     </div>
-                    <div className="card-soft p-3 sm:p-4">
+                    <div className="card-soft p-4">
                         <p className="text-xs text-secondary mb-2 truncate">{t('profile.avgSleep')}</p>
                         {weeklyStats.daysTracked > 0 ? (
                             <>
-                                <p className="text-xl sm:text-2xl font-semibold">{actualSleepHours.toFixed(1)}<span className="text-xs sm:text-sm text-secondary ml-1">h</span></p>
-                                <div className="flex items-center gap-1 text-gray-400 text-xs mt-2">
+                                <p className="text-xl sm:text-2xl font-semibold text-primary">{actualSleepHours.toFixed(1)}<span className="text-xs sm:text-sm text-secondary ml-1">h</span></p>
+                                <div className="flex items-center gap-1 text-secondary text-xs mt-2 opacity-80">
                                     <span className="truncate">{weeklyStats.daysTracked}日間追跡中</span>
                                 </div>
                             </>
                         ) : (
                             <div className="text-xs sm:text-sm text-secondary mt-2">
                                 <p>データ不足</p>
-                                <p className="text-[10px] sm:text-xs mt-1">数日使用すると表示されます</p>
+                                <p className="text-[10px] sm:text-xs mt-1 opacity-60">数日使用すると表示されます</p>
                             </div>
                         )}
                     </div>
                 </div>
-            </div>
-
-            {/* Support Section */}
-            <div className="mx-4 mt-6">
-                <a
-                    href="https://buymeacoffee.com/bulletlifew"
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="card-soft flex items-center justify-between p-4 sm:p-5 hover:shadow-md transition-shadow cursor-pointer"
-                    style={{ background: 'linear-gradient(135deg, #FFF9E6 0%, #FFFDF5 100%)', border: '1px solid #FFD93D' }}
-                >
-                    <div className="flex items-center gap-2 sm:gap-3 min-w-0 flex-1">
-                        <div className="p-2 bg-yellow-400 rounded-full flex-shrink-0">
-                            <Coffee size={18} className="text-yellow-900 sm:w-5 sm:h-5" />
-                        </div>
-                        <div className="min-w-0 flex-1">
-                            <p className="font-bold text-xs sm:text-sm text-gray-800 truncate">開発者をサポート</p>
-                            <p className="text-[10px] sm:text-xs text-gray-500 truncate">Buy Me a Coffee ☕</p>
-                        </div>
-                    </div>
-                    <Heart size={16} className="text-pink-500 flex-shrink-0 ml-2 sm:w-[18px] sm:h-[18px]" />
-                </a>
             </div>
         </div>
     );

@@ -1,6 +1,7 @@
 import { useTranslation } from 'react-i18next';
 import { Trash2, Coffee, PlusCircle } from 'lucide-react';
 import { useFlowState } from '../context/FlowStateContext';
+import './JournalPage.css';
 
 export default function JournalPage() {
     const { t } = useTranslation();
@@ -15,72 +16,71 @@ export default function JournalPage() {
     const totalCaffeine = todayRecords.reduce((sum, record) => sum + record.amount, 0);
 
     return (
-        <div className="page journal-page pb-20 flex flex-col relative h-full">
+        <div className="page journal-page pb-24 flex flex-col relative h-full">
             {/* Header / Summary - Sticky */}
             <div
-                className="journal-summary-card mb-6 sm:mb-8 p-3 sm:p-4 rounded-2xl shadow-sm border flex items-center justify-between"
+                className="journal-summary-card mb-6 sm:mb-8 p-4 rounded-2xl flex items-center justify-between"
                 style={{
                     position: 'sticky',
-                    top: 'calc(60px + env(safe-area-inset-top, 0px) + 0.5rem)',
+                    top: 'calc(var(--header-height) + env(safe-area-inset-top) + 0.5rem)',
                     zIndex: 40,
-                    backgroundColor: 'var(--bg-card)',
-                    borderColor: 'rgba(0, 0, 0, 0.03)',
+                    backgroundColor: 'rgba(18, 18, 18, 0.9)', // Dark semi-transparent
+                    backdropFilter: 'blur(12px)',
+                    border: '1px solid rgba(255, 255, 255, 0.1)',
                     maxWidth: '100%'
                 }}
             >
                 <div className="flex flex-col justify-center min-w-0 flex-1">
-                    <h2 className="text-xs font-bold tracking-widest uppercase mb-1" style={{ color: 'var(--text-secondary)' }}>{t('journal.totalIntake')}</h2>
-                    <p className="text-3xl sm:text-4xl font-light leading-none flex items-baseline">
-                        {totalCaffeine}<span className="text-xs sm:text-sm ml-1" style={{ color: 'var(--text-secondary)' }}>mg</span>
+                    <h2 className="text-xs font-bold tracking-widest uppercase text-secondary">{t('journal.totalIntake')}</h2>
+                    <p className="text-3xl sm:text-4xl font-light leading-tight flex items-baseline text-primary mt-1">
+                        {totalCaffeine}<span className="text-xs sm:text-sm ml-1 text-secondary">mg</span>
                     </p>
                 </div>
-                <div className="p-2 sm:p-3 rounded-full flex items-center justify-center flex-shrink-0 ml-2" style={{ backgroundColor: 'var(--bg-subtle)' }}>
-                    <Coffee size={20} className="sm:w-6 sm:h-6" style={{ color: 'var(--text-primary)' }} />
+                <div className="p-3 rounded-full flex items-center justify-center flex-shrink-0 ml-4 bg-subtle border border-white/5">
+                    <Coffee size={20} className="sm:w-6 sm:h-6 text-primary" />
                 </div>
             </div>
 
-            <div className="section mb-20">
-                <h3 className="text-sm font-bold tracking-widest mb-4 px-2 uppercase" style={{ color: 'var(--text-secondary)' }}>{t('journal.history')}</h3>
-                <div className="flex flex-col gap-3">
+            <div className="section mb-20 px-1">
+                <h3 className="text-sm font-bold tracking-widest mb-4 px-1 uppercase text-secondary">{t('journal.history')}</h3>
+                <div className="relative pl-6 sm:pl-8 ml-3 sm:ml-4 space-y-8 sm:space-y-10 my-8 journal-timeline">
                     {sortedRecords.length === 0 ? (
-                        <div className="flex flex-col items-center justify-center p-8 sm:p-10 text-center rounded-2xl shadow-sm border mx-2 mt-4" style={{ backgroundColor: 'var(--bg-card)', borderColor: 'rgba(0, 0, 0, 0.03)' }}>
-                            <div className="p-3 sm:p-4 rounded-full mb-3 sm:mb-4" style={{ backgroundColor: 'var(--bg-subtle)' }}>
-                                <Coffee size={28} className="sm:w-8 sm:h-8" style={{ color: 'var(--text-tertiary)' }} />
-                            </div>
-                            <h3 className="text-base sm:text-lg font-bold mb-2" style={{ color: 'var(--text-primary)' }}>{t('journal.noRecords')}</h3>
-                            <p className="text-xs sm:text-sm mb-5 sm:mb-6 max-w-[200px] mx-auto" style={{ color: 'var(--text-secondary)' }}>{t('journal.addSuggestion')}</p>
-
+                        <div className="flex flex-col items-start pt-2">
+                            <p className="text-secondary text-sm mb-4">{t('journal.noRecords')}</p>
                             <button
                                 onClick={() => setShowIntakeModal(true)}
-                                className="btn-primary text-sm sm:text-base"
-                                style={{ maxWidth: '200px' }}
+                                className="flex items-center gap-2 text-primary hover:text-white transition-colors text-sm font-medium"
                             >
-                                <PlusCircle size={18} strokeWidth={2.5} className="sm:w-5 sm:h-5" />
+                                <PlusCircle size={18} />
                                 <span>{t('intake.record')}</span>
                             </button>
                         </div>
                     ) : (
-                        sortedRecords.map((record) => (
-                            <div key={record.id} className="list-item w-full">
-                                <div className="item-content min-w-0 flex-1">
-                                    <p className="item-title text-base font-medium truncate">{record.time}</p>
-                                    <p className="item-subtitle text-xs uppercase tracking-wide truncate">{record.drink}</p>
-                                </div>
-                                <div className="flex items-center gap-1 sm:gap-2 flex-shrink-0">
-                                    <div className="text-right">
-                                        <p className="text-lg sm:text-xl font-light leading-none">{record.amount}</p>
-                                        <p className="text-xs text-right" style={{ color: 'var(--text-secondary)' }}>mg</p>
+                        sortedRecords.map((record, index) => (
+                            <div key={record.id} className="relative group flex items-start w-full">
+                                {/* Timeline Dot */}
+                                <div className="absolute -left-[31px] sm:-left-[41px] top-1 w-3 h-3 rounded-full bg-bg-app border-2 border-text-primary shadow-[0_0_0_4px_var(--bg-app)] z-10 transition-all duration-300 group-hover:bg-text-primary group-hover:scale-125"></div>
+
+                                <div className="flex justify-between items-start w-full">
+                                    <div className="flex flex-col">
+                                        <span className="text-lg font-bold text-primary leading-none mb-1">{record.time}</span>
+                                        <span className="text-xs text-secondary uppercase tracking-wider">{record.drink}</span>
                                     </div>
-                                    <button
-                                        className="btn-ghost p-2 sm:p-3 transition-colors"
-                                        style={{ minWidth: '44px', minHeight: '44px', color: 'var(--text-secondary)' }}
-                                        onMouseEnter={(e) => e.currentTarget.style.color = 'var(--status-critical)'}
-                                        onMouseLeave={(e) => e.currentTarget.style.color = 'var(--text-secondary)'}
-                                        onClick={() => deleteIntake(record.id)}
-                                        aria-label={t('delete')}
-                                    >
-                                        <Trash2 size={18} strokeWidth={1.5} />
-                                    </button>
+
+                                    <div className="flex items-center gap-4">
+                                        <div className="text-right">
+                                            <span className="text-xl font-light text-primary block leading-none">{record.amount}</span>
+                                            <span className="text-[10px] text-secondary uppercase tracking-wider">mg</span>
+                                        </div>
+
+                                        <button
+                                            className="opacity-0 group-hover:opacity-100 p-2 text-secondary hover:text-status-critical transition-all"
+                                            onClick={() => deleteIntake(record.id)}
+                                            aria-label={t('delete')}
+                                        >
+                                            <Trash2 size={16} />
+                                        </button>
+                                    </div>
                                 </div>
                             </div>
                         ))

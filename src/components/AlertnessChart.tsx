@@ -11,6 +11,7 @@ import {
 } from 'recharts';
 import type { TooltipProps } from 'recharts';
 import type { AlertnessDataPoint, IntakeRecord } from '../types';
+import { timeToDecimalHours } from '../lib/caffeine';
 
 interface AlertnessChartProps {
     data: AlertnessDataPoint[];
@@ -88,21 +89,28 @@ export default function AlertnessChart({
     }
     const currentTimeStr = `${String(adjustedHour).padStart(2, '0')}:${roundedMinutes}`;
 
-    // Helper to snap arbitrary times to chart grid (00 or 30)
-    const snapToGrid = (timeStr: string): string => {
-        const [h, m] = timeStr.split(':').map(Number);
-        let hour = h;
-        let minStr = '00';
+    // Helper to snap arbitrary times to the nearest available data point
+    const getNearestDataPointTime = (targetTime: string): string | null => {
+        if (!data || data.length === 0) return null;
 
-        if (m < 15) {
-            minStr = '00';
-        } else if (m < 45) {
-            minStr = '30';
-        } else {
-            minStr = '00';
-            hour = (hour + 1) % 24;
+        const target = timeToDecimalHours(targetTime);
+        let minDiff = Infinity;
+        let nearestTime: string | null = null;
+
+        // Loop through data to find closest match
+        for (const point of data) {
+            const pointTime = timeToDecimalHours(point.time);
+            let diff = Math.abs(target - pointTime);
+            // Handle midnight wrap-around (e.g., 23:50 vs 00:10 -> 20 min diff)
+            if (diff > 12) diff = 24 - diff;
+
+            if (diff < minDiff) {
+                minDiff = diff;
+                nearestTime = point.time;
+            }
         }
-        return `${String(hour).padStart(2, '0')}:${minStr}`;
+
+        return nearestTime;
     };
 
     return (
@@ -111,35 +119,38 @@ export default function AlertnessChart({
                 <AreaChart data={chartData} margin={{ top: 20, right: 5, left: -5, bottom: 0 }}>
                     <defs>
                         <linearGradient id="gradientTotal" x1="0" y1="0" x2="0" y2="1">
-                            <stop offset="5%" stopColor="#171717" stopOpacity={0.1} />
-                            <stop offset="95%" stopColor="#171717" stopOpacity={0} />
+                            <stop offset="5%" stopColor="var(--accent-primary)" stopOpacity={0.3} />
+                            <stop offset="95%" stopColor="var(--accent-primary)" stopOpacity={0} />
                         </linearGradient>
                         <linearGradient id="gradientBaseline" x1="0" y1="0" x2="0" y2="1">
-                            <stop offset="5%" stopColor="#A3A3A3" stopOpacity={0.1} />
-                            <stop offset="95%" stopColor="#A3A3A3" stopOpacity={0} />
+                            <stop offset="5%" stopColor="var(--text-secondary)" stopOpacity={0.1} />
+                            <stop offset="95%" stopColor="var(--text-secondary)" stopOpacity={0} />
                         </linearGradient>
                     </defs>
 
-                    <CartesianGrid strokeDasharray="3 3" stroke="#F5F5F5" vertical={false} />
+                    <CartesianGrid strokeDasharray="3 3" stroke="var(--bg-subtle)" vertical={false} />
 
                     <XAxis
                         dataKey="time"
-                        tick={{ fontSize: 12, fill: '#737373', fontWeight: 500 }}
+                        tick={{ fontSize: 12, fill: 'var(--text-secondary)', fontWeight: 500 }}
                         axisLine={false}
                         tickLine={false}
                         interval={4}
                     />
 
                     <YAxis
-                        tick={{ fontSize: 12, fill: '#737373', fontWeight: 500 }}
+                        tick={{ fontSize: 12, fill: 'var(--text-secondary)', fontWeight: 500 }}
                         axisLine={false}
                         tickLine={false}
                         domain={[0, 100]}
                         width={35}
                     />
 
-                    <Tooltip content={<CustomTooltip />} cursor={{ stroke: '#E5E5E5' }} />
-                    <Legend iconType="circle" wrapperStyle={{ fontSize: '10px', paddingTop: '10px' }} />
+                    <Tooltip
+                        content={<CustomTooltip />}
+                        cursor={{ stroke: 'var(--bg-subtle)' }}
+                    />
+                    <Legend iconType="circle" wrapperStyle={{ fontSize: '10px', paddingTop: '10px', color: 'var(--text-secondary)' }} />
 
                     {/* Baseline */}
                     {showBaseline && (
@@ -147,10 +158,12 @@ export default function AlertnessChart({
                             name="Sleep Baseline"
                             type="monotone"
                             dataKey="baseline"
-                            stroke="#A3A3A3"
+                            stroke="var(--text-secondary)"
                             strokeWidth={2}
                             strokeDasharray="4 4"
                             fill="url(#gradientBaseline)"
+                            animationBegin={0}
+                            animationDuration={1500}
                         />
                     )}
 
@@ -164,6 +177,8 @@ export default function AlertnessChart({
                             strokeWidth={2}
                             strokeDasharray="5 5"
                             fillOpacity={0}
+                            animationBegin={500}
+                            animationDuration={1500}
                         />
                     )}
 
@@ -172,31 +187,30 @@ export default function AlertnessChart({
                         name="Alertness Level"
                         type="monotone"
                         dataKey="total"
-                        stroke="#171717"
+                        stroke="var(--accent-primary)"
                         strokeWidth={3}
                         fill="url(#gradientTotal)"
-                        animationDuration={500}
+                        animationBegin={1000}
+                        animationDuration={1500}
                     />
 
                     {/* Intake Markers - Snap to grid to match XAxis */}
                     {intakeRecords.map((record, idx) => {
-                        const snappedTime = snapToGrid(record.time);
-                        // Only render if the snapped time exists in the data to avoid rendering issues
-                        const isInRange = data.some(d => d.time === snappedTime);
-                        if (!isInRange) return null;
+                        const snappedTime = getNearestDataPointTime(record.time);
+                        if (!snappedTime) return null;
 
                         return (
                             <ReferenceLine
                                 key={idx}
                                 x={snappedTime}
-                                stroke="#171717"
+                                stroke="var(--accent-primary)"
                                 strokeDasharray="3 3"
                                 label={{
                                     value: '☕',
                                     position: 'insideTop',
                                     dy: 20, // Push down
                                     fontSize: 16,
-                                    fill: '#171717'
+                                    fill: 'var(--accent-primary)'
                                 }}
                             />
                         );
@@ -209,12 +223,12 @@ export default function AlertnessChart({
                                 <ReferenceLine
                                     key={`date-transition-${idx}`}
                                     x="00:00"
-                                    stroke="#E5E5E5"
+                                    stroke="var(--bg-subtle)"
                                     strokeDasharray="4 4"
                                     label={{
                                         value: 'Next Day',
                                         position: 'insideTopLeft',
-                                        fill: '#A3A3A3',
+                                        fill: 'var(--text-secondary)',
                                         fontSize: 10,
                                         dy: 5,
                                         dx: 5
@@ -228,12 +242,12 @@ export default function AlertnessChart({
                     {/* Current Time */}
                     <ReferenceLine
                         x={currentTimeStr}
-                        stroke="#EF4444"
+                        stroke="var(--status-critical)"
                         strokeDasharray="2 2"
                         label={{
                             value: 'NOW',
                             position: 'top',
-                            fill: '#EF4444',
+                            fill: 'var(--status-critical)',
                             fontSize: 10,
                             fontWeight: 'bold'
                         }}

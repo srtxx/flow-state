@@ -1,0 +1,80 @@
+/* ============================================
+   Journal Timeline Animation
+   ============================================ */
+
+/*
+   Animation Keyframes
+*/
+@keyframes flowDown {
+    0% {
+        height: 0;
+        opacity: 0;
+    }
+
+    1% {
+        opacity: 1;
+    }
+
+    100% {
+        height: 100%;
+        opacity: 1;
+    }
+}
+
+/*
+   Timeline Container
+   Replaces the static border-l
+*/
+.journal-timeline {
+    position: relative;
+    /* Ensure border is removed via class override if needed, though we will remove the class itself in JSX */
+}
+
+/* 
+   1. Dotted Line Flows First 
+      Duration: 1.5s
+*/
+.journal-timeline::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    /* Adjust width to be visible but refined */
+    width: 2px;
+    /* Start height at 0 */
+    height: 0;
+    /* Vertical dotted line pattern */
+    background-image: linear-gradient(to bottom, rgba(255, 255, 255, 0.4) 50%, transparent 50%);
+    background-size: 2px 12px;
+    /* 6px dot, 6px skip */
+    background-repeat: repeat-y;
+
+    /* Initial state hidden */
+    opacity: 0;
+
+    /* Animate */
+    animation: flowDown 1.5s ease-out forwards;
+    z-index: 0;
+}
+
+/* 
+   2. Solid Line Flows Next 
+      Starts after the first animation (1.5s delay)
+*/
+.journal-timeline::after {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 2px;
+    height: 0;
+    /* Solid line color matching the theme's subtle borders */
+    background-color: rgba(255, 255, 255, 0.15);
+
+    /* Initial state hidden */
+    opacity: 0;
+
+    /* Animate with delay */
+    animation: flowDown 1.5s ease-out 1.5s forwards;
+    z-index: 1;
+}

@@ -140,10 +140,10 @@ export function generateAlertnessData(
     const now = new Date();
     const currentTime = now.getHours() + now.getMinutes() / 60;
 
-    // Filter to only include today's intake records (ticket #001)
-    const todayStart = new Date();
-    todayStart.setHours(0, 0, 0, 0);
-    const todayRecords = intakeRecords.filter(r => r.timestamp >= todayStart.getTime());
+    // Filter to include records from the last 24 hours
+    // This ensures caffeine from previous day still affects current day
+    const last24Hours = now.getTime() - (24 * 60 * 60 * 1000);
+    const recentRecords = intakeRecords.filter(r => r.timestamp >= last24Hours);
 
     const data: AlertnessDataPoint[] = [];
 
@@ -156,7 +156,7 @@ export function generateAlertnessData(
 
         // Calculate caffeine effect from all intake records
         let caffeineEffect = 0;
-        todayRecords.forEach(record => {
+        recentRecords.forEach(record => {
             const recordTime = timeToDecimalHours(record.time);
             // Calculate time since intake considering wrap-around
             let timeSinceIntake = actualHour - recordTime;
@@ -186,7 +186,7 @@ export function generateAlertnessData(
         const isCurrent = hourDiff < 0.25;
 
         // Check if this is an intake time
-        const isIntake = todayRecords.some(r => {
+        const isIntake = recentRecords.some(r => {
             const rTime = timeToDecimalHours(r.time);
             let diff = Math.abs(actualHour - rTime);
             if (diff > 12) diff = 24 - diff;
@@ -255,10 +255,10 @@ export function getRecommendedIntakeTime(
  * Drink presets
  */
 export const DRINK_OPTIONS: DrinkOption[] = [
-    { name: 'COFFEE', label: 'コーヒー', defaultMg: 100 },
-    { name: 'ESPRESSO', label: 'エスプレッソ', defaultMg: 80 },
-    { name: 'ENERGY', label: 'エナジードリンク', defaultMg: 80 },
-    { name: 'TEA', label: '紅茶', defaultMg: 50 },
+    { name: 'COFFEE S', label: 'コーヒーS', defaultMg: 100 },
+    { name: 'COFFEE L', label: 'コーヒーL', defaultMg: 200 },
+    { name: 'ENERGY S', label: 'エナジードリンクS', defaultMg: 80 },
+    { name: 'ENERGY L', label: 'エナジードリンクL', defaultMg: 142 },
 ];
 
 /**
@@ -286,4 +286,58 @@ export function getAvoidAfterTime(expectedSleepTime: string = '23:00'): string {
     let avoidHour = sleepHour - 9; // 9 hours before sleep
     if (avoidHour < 0) avoidHour += 24;
     return `${String(Math.floor(avoidHour)).padStart(2, '0')}:00`;
+}
+
+/**
+ * Check if caffeine intake will affect sleep
+ * Returns true if any caffeine (>= 1mg) will remain at bedtime
+ */
+export function willAffectSleep(intakeTime: string, expectedSleepTime: string): boolean {
+    const intakeHour = timeToDecimalHours(intakeTime);
+    const sleepHour = timeToDecimalHours(expectedSleepTime);
+
+    // Calculate hours until sleep
+    let hoursUntilSleep = sleepHour - intakeHour;
+    if (hoursUntilSleep < 0) hoursUntilSleep += 24;
+
+    // Caffeine affects sleep if taken within 9 hours before bedtime
+    return hoursUntilSleep < 9;
+}
+
+/**
+ * Calculate estimated caffeine level at sleep time
+ */
+export function estimateCaffeineAtSleep(
+    amount: number,
+    intakeTime: string,
+    sleepTime: string
+): number {
+    const intakeHour = timeToDecimalHours(intakeTime);
+    const sleepHour = timeToDecimalHours(sleepTime);
+
+    let hoursUntilSleep = sleepHour - intakeHour;
+    if (hoursUntilSleep < 0) hoursUntilSleep += 24;
+
+    // Calculate remaining caffeine at sleep time
+    if (hoursUntilSleep < PEAK_ABSORPTION_TIME) {
+        // Still absorbing
+        const absorptionRate = 1 - Math.exp(-3 * hoursUntilSleep / PEAK_ABSORPTION_TIME);
+        return amount * absorptionRate;
+    } else {
+        // Decay phase
+        const timeFromPeak = hoursUntilSleep - PEAK_ABSORPTION_TIME;
+        return amount * Math.pow(0.5, timeFromPeak / CAFFEINE_HALF_LIFE);
+    }
+}
+
+/**
+ * Check if caffeine will remain at sleep time (>= 1mg)
+ */
+export function willHaveCaffeineAtSleep(
+    amount: number,
+    intakeTime: string,
+    sleepTime: string
+): boolean {
+    const remaining = estimateCaffeineAtSleep(amount, intakeTime, sleepTime);
+    return remaining >= 1;
 }

@@ -1,8 +1,8 @@
 import { useState, useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
-import { X, Coffee, Plus, Zap, CupSoda } from 'lucide-react';
+import { X, Coffee, Zap, AlertTriangle } from 'lucide-react';
 import type { DrinkType } from '../../types';
-import { DRINK_OPTIONS, getCurrentTimeString } from '../../lib/caffeine';
+import { DRINK_OPTIONS, getCurrentTimeString, willHaveCaffeineAtSleep, estimateCaffeineAtSleep } from '../../lib/caffeine';
 import { useFlowState } from '../../context/FlowStateContext';
 import AlertnessChart from '../AlertnessChart';
 
@@ -12,22 +12,44 @@ interface IntakeModalProps {
     onAdd: (drink: DrinkType, amount: number, time: string) => void;
 }
 
+// --- Custom Icon Components ---
+
+const CoffeeIconS = () => (
+    <div className="relative flex items-center justify-center w-12 h-12 rounded-2xl bg-orange-50 text-orange-600 shadow-sm border border-orange-100">
+        <Coffee size={24} strokeWidth={2.5} />
+    </div>
+);
+
+const CoffeeIconL = () => (
+    <div className="relative flex items-center justify-center w-14 h-14 rounded-2xl bg-amber-100 text-amber-800 shadow-sm border border-amber-200">
+        <Coffee size={32} strokeWidth={2.5} />
+        <div className="absolute -top-1 -right-1 w-3 h-3 bg-amber-500 rounded-full border-2 border-white"></div>
+    </div>
+);
+
+const EnergyIconS = () => (
+    <div className="relative flex items-center justify-center w-12 h-12 rounded-2xl bg-sky-50 text-sky-600 shadow-sm border border-sky-100">
+        <Zap size={24} strokeWidth={2.5} className="fill-sky-100" />
+    </div>
+);
+
+const EnergyIconL = () => (
+    <div className="relative flex items-center justify-center w-14 h-14 rounded-2xl bg-lime-100 text-lime-700 shadow-sm border border-lime-200">
+        <Zap size={32} strokeWidth={2.5} className="fill-lime-200" />
+        <div className="absolute -top-1 -right-1 w-3 h-3 bg-lime-500 rounded-full border-2 border-white"></div>
+    </div>
+);
+
 export default function IntakeModal({ isOpen, onClose, onAdd }: IntakeModalProps) {
     const { t } = useTranslation();
-    const { showToast, alertnessData, predictedData, intakeRecords, setSimulationParams } = useFlowState();
-    const [mode, setMode] = useState<'quick' | 'custom'>('quick');
-    const [customAmount, setCustomAmount] = useState('100');
-    const [customTime, setCustomTime] = useState('');
-    const [error, setError] = useState<string | null>(null);
+    const { showToast, alertnessData, predictedData, intakeRecords, setSimulationParams, sleepData } = useFlowState();
+    const [hoveredDrink, setHoveredDrink] = useState<{ drink: DrinkType; amount: number } | null>(null);
 
     // Reset state when modal opens
     useEffect(() => {
-        if (isOpen) {
-            setCustomTime(getCurrentTimeString());
-            setError(null);
-        } else {
-            // Clear simulation when closed
+        if (!isOpen) {
             setSimulationParams(undefined);
+            setHoveredDrink(null);
         }
     }, [isOpen, setSimulationParams]);
 
@@ -41,79 +63,65 @@ export default function IntakeModal({ isOpen, onClose, onAdd }: IntakeModalProps
         document.addEventListener('keydown', handleEsc);
         return () => document.removeEventListener('keydown', handleEsc);
     }, [isOpen, onClose]);
-    // Monitor custom inputs for simulation
-    useEffect(() => {
-        if (!isOpen || mode !== 'custom') return;
-
-        const amount = parseInt(customAmount, 10);
-        if (!isNaN(amount) && amount > 0 && customTime) {
-            setSimulationParams({ amount, time: customTime });
-        } else {
-            setSimulationParams(undefined);
-        }
-    }, [isOpen, mode, customAmount, customTime, setSimulationParams]);
 
     if (!isOpen) return null;
 
-    // Validation
-    const validateAmount = (value: string): string | null => {
-        const amount = parseInt(value, 10);
-        if (isNaN(amount) || value.trim() === '') {
-            return t('validation.amountRequired');
-        }
-        if (amount < 1 || amount > 1000) {
-            return t('validation.amountRange');
-        }
-        return null;
-    };
-
-    const handleAmountChange = (value: string) => {
-        setCustomAmount(value);
-        setError(validateAmount(value));
-    };
-
     const handleQuickAdd = (drink: DrinkType, amount: number) => {
-        onAdd(drink, amount, getCurrentTimeString());
+        const time = getCurrentTimeString();
+        onAdd(drink, amount, time);
         showToast(`${drink} (${amount}mg) ${t('intake.recorded')}`, 'success');
         onClose();
     };
 
-    const handleCustomAdd = () => {
-        const validationError = validateAmount(customAmount);
-        if (validationError) {
-            setError(validationError);
-            return;
-        }
+    const quickAddWillAffectSleep = hoveredDrink &&
+        willHaveCaffeineAtSleep(hoveredDrink.amount, getCurrentTimeString(), sleepData.lastSleepStart);
 
-        const amount = parseInt(customAmount, 10);
-        onAdd('CUSTOM', amount, customTime || getCurrentTimeString());
-        showToast(`${t('intake.title')} ${amount}mg ${t('intake.recorded')}`, 'success');
-        setCustomAmount('100');
-        setError(null);
-        onClose();
+    const getSleepImpactDetails = () => {
+        if (!hoveredDrink) return null;
+
+        const amount = hoveredDrink.amount;
+        const time = getCurrentTimeString();
+        const sleepTime = sleepData.lastSleepStart;
+
+        const [intakeH, intakeM] = time.split(':').map(Number);
+        const [sleepH, sleepM] = sleepTime.split(':').map(Number);
+
+        let hoursUntilSleep = (sleepH + sleepM / 60) - (intakeH + intakeM / 60);
+        if (hoursUntilSleep < 0) hoursUntilSleep += 24;
+
+        const remainingCaffeine = Math.round(estimateCaffeineAtSleep(amount, time, sleepTime));
+
+        return {
+            hours: hoursUntilSleep.toFixed(1),
+            sleepTime,
+            amount: remainingCaffeine
+        };
     };
 
-    const isSubmitDisabled = !!validateAmount(customAmount);
+    const sleepImpactDetails = getSleepImpactDetails();
+    const showSleepWarning = quickAddWillAffectSleep && sleepImpactDetails;
 
-    // Helper for icons
-    const getIcon = (name: string) => {
-        if (name.includes('Coffee')) return <Coffee size={20} />;
-        if (name.includes('Energy')) return <Zap size={20} />;
-        return <CupSoda size={20} />;
+    const renderIcon = (name: string) => {
+        switch (name) {
+            case 'COFFEE S': return <CoffeeIconS />;
+            case 'COFFEE L': return <CoffeeIconL />;
+            case 'ENERGY S': return <EnergyIconS />;
+            case 'ENERGY L': return <EnergyIconL />;
+            default: return <Coffee size={24} />;
+        }
     };
 
     return (
         <div className="modal-overlay" onClick={onClose}>
             <div className="modal-content" onClick={e => e.stopPropagation()}>
-                <div className="modal-header mb-2">
+                <div className="modal-header mb-2 sm:mb-4">
                     <h2 className="modal-title">{t('intake.logCaffeine')}</h2>
                     <button onClick={onClose} className="btn-close">
                         <X size={20} />
                     </button>
                 </div>
 
-                {/* Simulation Chart */}
-                <div className="h-28 sm:h-32 w-full mb-3 sm:mb-4">
+                <div className="h-28 sm:h-32 w-full mb-4 sm:mb-6">
                     <AlertnessChart
                         data={alertnessData}
                         predictedData={predictedData}
@@ -122,93 +130,49 @@ export default function IntakeModal({ isOpen, onClose, onAdd }: IntakeModalProps
                     />
                 </div>
 
-                {/* Tabs */}
-                <div className="flex bg-gray-100 p-1 rounded-xl mb-5 sm:mb-6">
-                    <button
-                        className={`flex-1 py-2 sm:py-2.5 text-xs sm:text-sm font-bold rounded-lg transition-all duration-200 ${mode === 'quick' ? 'bg-white shadow-md text-black' : 'text-gray-600 hover:text-gray-800 hover:bg-gray-50'}`}
-                        onClick={() => setMode('quick')}
-                    >
-                        {t('intake.quickAdd')}
-                    </button>
-                    <button
-                        className={`flex-1 py-2 sm:py-2.5 text-xs sm:text-sm font-bold rounded-lg transition-all duration-200 ${mode === 'custom' ? 'bg-white shadow-md text-black' : 'text-gray-600 hover:text-gray-800 hover:bg-gray-50'}`}
-                        onClick={() => {
-                            setMode('custom');
-                            setCustomTime(getCurrentTimeString());
-                            setError(null);
-                        }}
-                    >
-                        {t('intake.custom')}
-                    </button>
-                </div>
-
-                {mode === 'quick' ? (
-                    <div className="intake-grid">
-                        {DRINK_OPTIONS.map((drink) => (
-                            <button
-                                key={drink.name}
-                                className="card-soft flex flex-col items-center justify-center gap-1 sm:gap-2 transition-all duration-150 border-2 border-transparent hover:border-gray-200 hover:shadow-md hover:scale-[1.02] active:scale-[0.98] active:border-black p-3 sm:p-4 m-0 h-auto min-h-[100px] sm:min-h-[120px]"
-                                onClick={() => handleQuickAdd(drink.name, drink.defaultMg)}
-                                onMouseEnter={() => setSimulationParams({ amount: drink.defaultMg, time: getCurrentTimeString() })}
-                                onMouseLeave={() => setSimulationParams(undefined)}
-                            >
-                                <div className="p-2 sm:p-3 bg-gray-100 rounded-full text-gray-800 mb-1 transition-colors group-hover:bg-gray-200">
-                                    {getIcon(drink.name)}
-                                </div>
-                                <p className="font-bold text-xs sm:text-sm text-center leading-tight">{drink.name}</p>
-                                <p className="text-xs text-secondary">{drink.defaultMg}mg</p>
-                            </button>
-                        ))}
-                    </div>
-                ) : (
-                    <div className="flex flex-col gap-3 sm:gap-4">
-                        <div>
-                            <label className="text-xs font-bold text-secondary uppercase tracking-wider mb-2 block">
-                                {t('intake.amount')}
-                            </label>
-                            <input
-                                type="number"
-                                value={customAmount}
-                                onChange={(e) => handleAmountChange(e.target.value)}
-                                className={`input-soft text-xl sm:text-2xl font-light ${error ? 'border-red-500' : ''}`}
-                                placeholder="100"
-                                min="1"
-                                max="1000"
-                                autoFocus
-                            />
-                            {error && (
-                                <p className="text-red-500 text-xs sm:text-sm mt-1">{error}</p>
-                            )}
-                        </div>
-
-                        <div>
-                            <label className="text-xs font-bold text-secondary uppercase tracking-wider mb-2 block">
-                                {t('intake.time')}
-                            </label>
-                            <input
-                                type="time"
-                                value={customTime}
-                                onChange={(e) => setCustomTime(e.target.value)}
-                                className="input-soft text-xl sm:text-2xl font-light"
-                            />
-                        </div>
-
-                        <div className="flex gap-2 sm:gap-3 mt-2 sm:mt-4">
-                            <button onClick={onClose} className="btn-secondary flex-1">
-                                {t('cancel')}
-                            </button>
-                            <button
-                                onClick={handleCustomAdd}
-                                className="btn-primary flex-1 flex items-center justify-center gap-2"
-                                disabled={isSubmitDisabled}
-                                style={{ opacity: isSubmitDisabled ? 0.5 : 1, cursor: isSubmitDisabled ? 'not-allowed' : 'pointer' }}
-                            >
-                                <Plus size={18} className="sm:w-5 sm:h-5" />
-                                <span>{t('intake.record')}</span>
-                            </button>
+                {showSleepWarning && (
+                    <div className="bg-amber-50 border-2 border-amber-200 rounded-2xl p-3 sm:p-4 mb-4 animate-in fade-in slide-in-from-top-2 duration-300">
+                        <div className="flex items-start gap-2 sm:gap-3">
+                            <div className="p-1.5 sm:p-2 bg-amber-100 rounded-full text-amber-600 flex-shrink-0 mt-0.5">
+                                <AlertTriangle size={18} className="sm:w-5 sm:h-5" />
+                            </div>
+                            <div className="flex-1 min-w-0">
+                                <h4 className="font-bold text-xs sm:text-sm text-amber-900 mb-1">
+                                    {t('intake.sleepImpactWarning')}
+                                </h4>
+                                <p className="text-xs sm:text-sm text-amber-800 leading-relaxed">
+                                    {t('intake.sleepImpactMessage', sleepImpactDetails)}
+                                </p>
+                            </div>
                         </div>
                     </div>
                 )}
+
+                <div className="intake-grid">
+                    {DRINK_OPTIONS.map((drink) => (
+                        <button
+                            key={drink.name}
+                            className="card-soft flex flex-col items-center justify-center gap-3 transition-all duration-200 border-2 border-transparent hover:border-gray-200 hover:shadow-lg hover:scale-[1.03] active:scale-[0.98] active:border-black p-4 h-auto min-h-[140px] group relative overflow-hidden"
+                            onClick={() => handleQuickAdd(drink.name, drink.defaultMg)}
+                            onMouseEnter={() => {
+                                setSimulationParams({ amount: drink.defaultMg, time: getCurrentTimeString() });
+                                setHoveredDrink({ drink: drink.name, amount: drink.defaultMg });
+                            }}
+                            onMouseLeave={() => {
+                                setSimulationParams(undefined);
+                                setHoveredDrink(null);
+                            }}
+                        >
+                            <div className="flex-1 flex items-center justify-center w-full">
+                                {renderIcon(drink.name)}
+                            </div>
+                            <div className="w-full text-center z-10">
+                                <p className="font-bold text-sm sm:text-base leading-tight mb-0.5">{drink.name}</p>
+                                <p className="text-xs text-secondary font-medium">{drink.defaultMg}mg</p>
+                            </div>
+                        </button>
+                    ))}
+                </div>
             </div>
         </div>
     );
