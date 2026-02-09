@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
-import { X, Coffee, AlertTriangle, Star } from 'lucide-react';
+import { X, Coffee, AlertTriangle } from 'lucide-react';
 import type { DrinkType } from '../../types';
 import { DRINK_OPTIONS, getCurrentTimeString, willHaveCaffeineAtSleep, estimateCaffeineAtSleep } from '../../lib/caffeine';
 import { useFlowState } from '../../context/FlowStateContext';
@@ -17,61 +17,88 @@ interface IntakeModalProps {
 
 // --- Custom Icon Components ---
 
+// --- Custom Icon Components ---
+
 const CoffeeIconS = () => (
-    <div className="relative flex items-center justify-center w-10 h-16 rounded-sm bg-gradient-to-b from-yellow-600 via-yellow-400 to-yellow-600 shadow-md border border-yellow-700 overflow-hidden">
-        {/* Boss Homage: Short Can */}
-        {/* Top Rim */}
-        <div className="absolute top-0 w-full h-1.5 bg-gray-300 border-b border-gray-400" />
-        {/* Dark Band */}
-        <div className="absolute top-8 w-full h-5 bg-indigo-900 flex items-center justify-center">
-            <div className="w-8 h-0.5 bg-yellow-500 opacity-50" />
-        </div>
-        {/* Pipe / Face hint */}
-        <div className="absolute top-3 w-6 h-4 bg-yellow-900 rounded-full opacity-20" />
+    <div className="relative flex items-center justify-center w-10 h-14 transition-transform duration-300 group-hover:-translate-y-1">
+        {/* Boss Homage: Short Can - Minimalist Gold/Brown */}
+        <svg width="40" height="56" viewBox="0 0 40 56" fill="none" xmlns="http://www.w3.org/2000/svg" className="drop-shadow-md">
+            {/* Can Body */}
+            <rect x="4" y="2" width="32" height="52" rx="2" fill="url(#bossGradient)" stroke="#854d0e" strokeWidth="1.5" />
+            {/* Top Rim */}
+            <path d="M4 8H36" stroke="#854d0e" strokeWidth="1.5" strokeOpacity="0.5" />
+            {/* Dark Band with Gold Accent */}
+            <rect x="4" y="28" width="32" height="12" fill="#1e1b4b" opacity="0.9" />
+            <rect x="14" y="33" width="12" height="2" rx="1" fill="#facc15" />
+            {/* Pipe Icon Hint */}
+            <path d="M26 16C26 18.2091 24.2091 20 22 20H18V12H22C24.2091 12 26 13.7909 26 16Z" fill="#78350f" fillOpacity="0.3" />
+
+            <defs>
+                <linearGradient id="bossGradient" x1="20" y1="2" x2="20" y2="54" gradientUnits="userSpaceOnUse">
+                    <stop stopColor="#EAB308" />
+                    <stop offset="0.5" stopColor="#CA8A04" />
+                    <stop offset="1" stopColor="#EAB308" />
+                </linearGradient>
+            </defs>
+        </svg>
     </div>
 );
 
 const CoffeeIconL = () => (
-    <div className="relative flex items-center justify-center w-12 h-16">
-        {/* Starbucks Homage: Tall Cup */}
-        {/* Cup Body */}
-        <div className="w-10 h-14 bg-white border-2 border-gray-200 border-t-0 rounded-b-lg shadow-sm relative overflow-hidden flex items-center justify-center">
-            {/* Sleeve (optional, maybe just logo) */}
-            <div className="w-8 h-8 rounded-full bg-green-700 flex items-center justify-center text-white text-[8px] font-bold border border-green-600">
-                <Star size={16} fill="white" />
-            </div>
-        </div>
-        {/* Lid */}
-        <div className="absolute -top-1 w-12 h-2 bg-white border-2 border-gray-200 rounded-sm shadow-sm" />
+    <div className="relative flex items-center justify-center w-12 h-16 transition-transform duration-300 group-hover:-translate-y-1">
+        {/* Starbucks Homage: Tall Cup - Clean White/Green */}
+        <svg width="48" height="64" viewBox="0 0 48 64" fill="none" xmlns="http://www.w3.org/2000/svg" className="drop-shadow-sm">
+            {/* Cup Body */}
+            <path d="M10 12L12 56C12.2 59 14 60 24 60C34 60 35.8 59 36 56L38 12H10Z" fill="#F8FAFC" stroke="#CBD5E1" strokeWidth="1.5" />
+            {/* Lid */}
+            <path d="M8 12H40V8C40 6.89543 39.1046 6 38 6H10C8.89543 6 8 6.89543 8 8V12Z" fill="white" stroke="#CBD5E1" strokeWidth="1.5" />
+            {/* Sleeve/Logo Area */}
+            <circle cx="24" cy="36" r="8" fill="#15803d" />
+            <path d="M24 32L25 35H28L25.5 37L26.5 40L24 38L21.5 40L22.5 37L20 35H23L24 32Z" fill="white" />
+        </svg>
     </div>
 );
 
 const EnergyIconS = () => (
-    <div className="relative flex items-center justify-center w-12 h-12 rounded-2xl bg-gradient-to-br from-blue-600 to-blue-700 shadow-sm border-2 border-gray-300 overflow-hidden">
-        {/* Red Bull Silhouette */}
-        <svg viewBox="0 0 48 48" className="w-full h-full absolute inset-0 opacity-90">
-            {/* Bull head */}
-            <circle cx="24" cy="26" r="8" fill="#dc2626" />
-            {/* Left horn */}
-            <path d="M 18 22 Q 14 18, 12 14" stroke="#dc2626" strokeWidth="2" fill="none" strokeLinecap="round" />
-            {/* Right horn */}
-            <path d="M 30 22 Q 34 18, 36 14" stroke="#dc2626" strokeWidth="2" fill="none" strokeLinecap="round" />
-            {/* Snout */}
-            <ellipse cx="24" cy="30" rx="4" ry="3" fill="#b91c1c" />
+    <div className="relative flex items-center justify-center w-10 h-16 transition-transform duration-300 group-hover:-translate-y-1">
+        {/* Red Bull Homage: Slim Can - Silver/Blue Geometric */}
+        <svg width="40" height="64" viewBox="0 0 40 64" fill="none" xmlns="http://www.w3.org/2000/svg" className="drop-shadow-md">
+            {/* Can Body */}
+            <rect x="6" y="4" width="28" height="56" rx="3" fill="url(#rbGradient)" stroke="#94a3b8" strokeWidth="1.5" />
+            {/* Top Rim */}
+            <path d="M6 10H34" stroke="#94a3b8" strokeWidth="1.5" />
+            {/* Blue Geometric Pattern */}
+            <path d="M6 4L34 60V4H6Z" fill="#2563EB" fillOpacity="0.1" />
+            <path d="M6 60L34 4V60H6Z" fill="#1D4ED8" fillOpacity="0.1" />
+            {/* Red Accent (Sun/Bull abstract) */}
+            <circle cx="20" cy="32" r="5" fill="#DC2626" />
+            <path d="M16 32H24" stroke="#FECACA" strokeWidth="1" strokeOpacity="0.5" />
+
+            <defs>
+                <linearGradient id="rbGradient" x1="6" y1="4" x2="34" y2="60" gradientUnits="userSpaceOnUse">
+                    <stop stopColor="#F1F5F9" />
+                    <stop offset="1" stopColor="#E2E8F0" />
+                </linearGradient>
+            </defs>
         </svg>
     </div>
 );
 
 const EnergyIconL = () => (
-    <div className="relative flex items-center justify-center w-14 h-14 rounded-2xl bg-zinc-950 shadow-sm border-2 border-gray-800 overflow-hidden">
-        {/* Monster Claw Marks */}
-        <svg viewBox="0 0 56 56" className="w-full h-full absolute inset-0">
-            {/* Three vertical claw marks */}
-            <path d="M 16 12 L 18 44" stroke="#22c55e" strokeWidth="4" strokeLinecap="round" />
-            <path d="M 28 10 L 28 46" stroke="#22c55e" strokeWidth="4" strokeLinecap="round" />
-            <path d="M 40 12 L 38 44" stroke="#22c55e" strokeWidth="4" strokeLinecap="round" />
+    <div className="relative flex items-center justify-center w-12 h-16 transition-transform duration-300 group-hover:-translate-y-1">
+        {/* Monster Homage: Sleek Can - Matte Black/Neon Green */}
+        <svg width="48" height="64" viewBox="0 0 48 64" fill="none" xmlns="http://www.w3.org/2000/svg" className="drop-shadow-md">
+            {/* Can Body */}
+            <rect x="8" y="2" width="32" height="60" rx="4" fill="#18181b" stroke="#3f3f46" strokeWidth="1.5" />
+            {/* Top Rim */}
+            <path d="M8 8H40" stroke="#3f3f46" strokeWidth="1.5" />
+            {/* Scratch Marks */}
+            <path d="M19 18L18 46" stroke="#22c55e" strokeWidth="2.5" strokeLinecap="round" />
+            <path d="M24 16L24 48" stroke="#22c55e" strokeWidth="2.5" strokeLinecap="round" />
+            <path d="M29 18L30 46" stroke="#22c55e" strokeWidth="2.5" strokeLinecap="round" />
+            {/* Tab Accent */}
+            <rect x="22" y="2" width="4" height="6" rx="1" fill="#71717a" />
         </svg>
-        <div className="absolute -top-1 -right-1 w-3 h-3 bg-lime-500 rounded-full border-2 border-zinc-950"></div>
     </div>
 );
 

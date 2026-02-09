@@ -1,6 +1,6 @@
 export { default as Layout } from './Layout';
 export { default as BottomNav } from './BottomNav';
-export { default as QuickAdd } from './QuickAdd';
+
 export { default as AlertnessChart } from './AlertnessChart';
 export { default as OnboardingModal } from './modals/OnboardingModal';
 export { default as SleepInputModal } from './modals/SleepInputModal';
