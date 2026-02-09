@@ -147,12 +147,19 @@ export function generateAlertnessData(
 
     const data: AlertnessDataPoint[] = [];
 
+    // Start from 6:00 instead of wake time
+    const startHour = 6;
+
     for (let h = 0; h < 24; h += 0.5) {
-        const actualHour = (wakeTime + h) % 24;
+        const actualHour = (startHour + h) % 24;
         const timeStr = `${String(Math.floor(actualHour)).padStart(2, '0')}:${h % 1 === 0 ? '00' : '30'}`;
 
+        // Calculate hours from wake for baseline calculation
+        let hoursFromWake = actualHour - wakeTime;
+        if (hoursFromWake < 0) hoursFromWake += 24;
+
         // Baseline alertness
-        const baseline = calculateBaselineAlertness(h, sleepData, actualSleepHours);
+        const baseline = calculateBaselineAlertness(hoursFromWake, sleepData, actualSleepHours);
 
         // Calculate caffeine effect from all intake records
         let caffeineEffect = 0;
@@ -265,7 +272,7 @@ export const DRINK_OPTIONS: DrinkOption[] = [
  * Generate unique ID
  */
 export function generateId(): string {
-    return Date.now().toString(36) + Math.random().toString(36).substr(2);
+    return Date.now().toString(36) + Math.random().toString(36).substring(2);
 }
 
 /**
