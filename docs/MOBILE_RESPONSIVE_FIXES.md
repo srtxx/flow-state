@@ -579,8 +579,31 @@ className="card-soft flex flex-col items-center justify-center gap-1 sm:gap-2 ..
 
 ### 次のステップ
 
-1. **デプロイ**: Vercelに本番デプロイ
+1. **デプロイ**: ✅ 完了 - https://flow-state-vert.vercel.app
 2. **実機テスト**: 各デバイスサイズでの動作確認
 3. **フィードバック収集**: 実際の使用感の確認
 4. **追加修正**: 必要に応じて微調整
+
+---
+
+## デプロイ情報（第2回）
+
+- **デプロイ日時**: 2026年2月9日
+- **本番URL**: https://flow-state-vert.vercel.app
+- **Inspect URL**: https://vercel.com/str-xxxxs-projects/flow-state/D8Bv6zJcmmPmEic8X7SEu69TiRV
+- **ビルドサイズ**: 683.93 kB (gzip: 200.23 kB)
+- **ビルド時間**: 8.84s
+
+## 実機テスト待ち
+
+次のデバイスでテストして、さらなる問題点を洗い出します:
+
+- [ ] iPhone SE (320px幅)
+- [ ] iPhone 12/13 (390px幅)
+- [ ] iPhone 14 Pro Max (430px幅)
+- [ ] Android (360px-414px幅)
+- [ ] 横向き表示
+- [ ] タブレット (768px+)
+
+問題が見つかった場合は、このドキュメントに追記して第3回修正を実施します。
 

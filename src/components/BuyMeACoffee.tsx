@@ -30,7 +30,7 @@ export function BuyMeACoffeeWidget({ username }: BuyMeACoffeeWidgetProps) {
         script.dataset.color = '#171717';
         script.dataset.position = 'Right';
         script.dataset.x_margin = '18';
-        script.dataset.y_margin = '100'; // Above bottom nav
+        script.dataset.y_margin = '110'; // Above bottom nav (increased for mobile)
 
         script.onload = () => {
             console.log('Buy Me a Coffee widget loaded');
