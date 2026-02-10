@@ -15,6 +15,7 @@ import { MetadataCollector } from './metadata.js';
 import { ReferenceAnalyzer } from './analyzer.js';
 import { ImportanceEvaluator, DuplicateChecker, StatusAssigner } from './evaluator.js';
 import { ReportGenerator } from './reporter.js';
+import { WorkflowLogger } from './workflow-logger.js';
 import {
   SystemConfig,
   OrganizationReport,
@@ -34,6 +35,7 @@ export { MetadataCollector } from './metadata.js';
 export { ReferenceAnalyzer } from './analyzer.js';
 export { ImportanceEvaluator, DuplicateChecker, StatusAssigner } from './evaluator.js';
 export { ReportGenerator } from './reporter.js';
+export { WorkflowLogger } from './workflow-logger.js';
 
 /**
  * Progress callback function type
@@ -49,6 +51,8 @@ export interface OrganizationResult {
   report: OrganizationReport;
   /** Path where the report was saved */
   reportPath: string;
+  /** Path to the workflow log file */
+  logFilePath: string;
   /** Whether the operation completed successfully */
   success: boolean;
   /** Error message if operation failed */
@@ -86,37 +90,62 @@ export async function runDocumentOrganization(
 ): Promise<OrganizationResult> {
   const allErrors: ErrorInfo[] = [];
   
+  // Initialize workflow logger
+  const logger = new WorkflowLogger(true);
+  
   try {
     // Normalize workspace path
     const normalizedWorkspace = path.resolve(workspacePath);
     
+    // Initialize logger with workspace path
+    const logFilePath = await logger.initialize(normalizedWorkspace);
+    await logger.info('Initialization', `Workspace: ${normalizedWorkspace}`);
+    await logger.info('Initialization', `Log file: ${logFilePath}`);
+    
     // Step 1: Load configuration
     reportProgress(progressCallback, 'Loading configuration...', 0, 9);
+    await logger.stepStart(1, 'Configuration', 'Loading system configuration');
     const config: SystemConfig = ConfigManager.load(configPath);
+    await logger.stepComplete(1, 'Configuration', 'Configuration loaded successfully', {
+      configPath: configPath || 'default',
+      includePaths: config.scanner.includePaths,
+      excludePaths: config.scanner.excludePaths,
+    });
     
     // Step 2: Scan workspace for documents
     reportProgress(progressCallback, 'Scanning workspace for documents...', 1, 9);
+    await logger.stepStart(2, 'Document Scan', 'Scanning workspace for documents');
     const scanner = new Scanner(config.scanner);
     const scannedDocuments = await scanner.scan(normalizedWorkspace);
     allErrors.push(...scanner.getErrors());
     
     console.log(`Found ${scannedDocuments.length} documents`);
+    await logger.stepComplete(2, 'Document Scan', `Found ${scannedDocuments.length} documents`, {
+      documentCount: scannedDocuments.length,
+      errorCount: scanner.getErrors().length,
+    });
     
     if (scannedDocuments.length === 0) {
       console.warn('No documents found in workspace');
+      await logger.warning('Document Scan', 'No documents found in workspace');
+      
       // Generate empty report
       const emptyReport = createEmptyReport(normalizedWorkspace, allErrors);
-      const reportPath = await writeReport(emptyReport, config, normalizedWorkspace);
+      const reportPath = await writeReport(emptyReport, config, normalizedWorkspace, logger);
+      
+      await logger.complete(true, 'No documents to organize');
       
       return {
         report: emptyReport,
         reportPath,
+        logFilePath,
         success: true,
       };
     }
     
     // Step 3: Collect metadata for each document
     reportProgress(progressCallback, 'Collecting metadata...', 2, 9);
+    await logger.stepStart(3, 'Metadata Collection', 'Collecting metadata for all documents');
     const metadataCollector = new MetadataCollector();
     const documentsWithMetadata: DocumentMetadata[] = [];
     
@@ -138,9 +167,14 @@ export async function runDocumentOrganization(
     allErrors.push(...metadataCollector.getErrors());
     
     console.log(`Collected metadata for ${documentsWithMetadata.length} documents`);
+    await logger.stepComplete(3, 'Metadata Collection', `Collected metadata for ${documentsWithMetadata.length} documents`, {
+      documentCount: documentsWithMetadata.length,
+      errorCount: metadataCollector.getErrors().length,
+    });
     
     // Step 4: Analyze reference relationships
     reportProgress(progressCallback, 'Analyzing reference relationships...', 3, 9);
+    await logger.stepStart(4, 'Reference Analysis', 'Analyzing document reference relationships');
     const referenceAnalyzer = new ReferenceAnalyzer();
     const referenceGraph = await referenceAnalyzer.analyze(
       documentsWithMetadata,
@@ -149,9 +183,15 @@ export async function runDocumentOrganization(
     allErrors.push(...referenceAnalyzer.getErrors());
     
     console.log(`Found ${referenceGraph.references.length} references between documents`);
+    await logger.stepComplete(4, 'Reference Analysis', `Found ${referenceGraph.references.length} references`, {
+      referenceCount: referenceGraph.references.length,
+      documentNodeCount: referenceGraph.documents.size,
+      errorCount: referenceAnalyzer.getErrors().length,
+    });
     
     // Step 5: Check for duplicates
     reportProgress(progressCallback, 'Checking for duplicates...', 4, 9);
+    await logger.stepStart(5, 'Duplicate Check', 'Checking for duplicate documents');
     const duplicateChecker = new DuplicateChecker();
     const duplicateMap = await duplicateChecker.checkDuplicates(
       documentsWithMetadata,
@@ -163,9 +203,14 @@ export async function runDocumentOrganization(
       d => d.duplicateOf !== null
     ).length;
     console.log(`Found ${duplicateCount} duplicate documents`);
+    await logger.stepComplete(5, 'Duplicate Check', `Found ${duplicateCount} duplicate documents`, {
+      duplicateCount,
+      errorCount: duplicateChecker.getErrors().length,
+    });
     
     // Step 6: Evaluate importance and assign status
     reportProgress(progressCallback, 'Evaluating importance...', 5, 9);
+    await logger.stepStart(6, 'Importance Evaluation', 'Evaluating document importance and assigning status');
     const importanceEvaluator = new ImportanceEvaluator(config.evaluator);
     const statusAssigner = new StatusAssigner(config.evaluator);
     
@@ -213,8 +258,22 @@ export async function runDocumentOrganization(
     
     console.log('Completed importance evaluation and status assignment');
     
+    // Count documents by status
+    const statusCounts = {
+      necessary: documentsWithStatus.filter(d => d.status === DocumentStatus.NECESSARY).length,
+      unnecessary: documentsWithStatus.filter(d => d.status === DocumentStatus.UNNECESSARY).length,
+      needsReview: documentsWithStatus.filter(d => d.status === DocumentStatus.NEEDS_REVIEW).length,
+    };
+    
+    await logger.stepComplete(6, 'Importance Evaluation', 'Completed evaluation and status assignment', {
+      necessary: statusCounts.necessary,
+      unnecessary: statusCounts.unnecessary,
+      needsReview: statusCounts.needsReview,
+    });
+    
     // Step 7: Generate report
     reportProgress(progressCallback, 'Generating report...', 6, 9);
+    await logger.stepStart(7, 'Report Generation', 'Generating organization report');
     const reportGenerator = new ReportGenerator();
     const report = reportGenerator.generate(
       documentsWithStatus,
@@ -223,10 +282,18 @@ export async function runDocumentOrganization(
     );
     
     console.log('Report generated successfully');
+    await logger.stepComplete(7, 'Report Generation', 'Report generated successfully', {
+      totalDocuments: report.summary.totalDocuments,
+      totalErrors: report.errors.length,
+    });
     
     // Step 8: Write report to file
     reportProgress(progressCallback, 'Writing report to file...', 7, 9);
-    const reportPath = await writeReport(report, config, normalizedWorkspace);
+    await logger.stepStart(8, 'Report Output', 'Writing report to file');
+    const reportPath = await writeReport(report, config, normalizedWorkspace, logger);
+    await logger.stepComplete(8, 'Report Output', `Report written to ${reportPath}`, {
+      reportPath,
+    });
     
     // Step 9: Complete
     reportProgress(progressCallback, 'Complete!', 9, 9);
@@ -240,11 +307,16 @@ export async function runDocumentOrganization(
     console.log(`Duplicates: ${report.summary.duplicatesFound}`);
     console.log(`Errors: ${report.errors.length}`);
     console.log(`Report saved to: ${reportPath}`);
+    console.log(`Log saved to: ${logFilePath}`);
     console.log('=====================================\n');
+    
+    // Complete workflow logging
+    await logger.complete(true, `Organized ${report.summary.totalDocuments} documents`);
     
     return {
       report,
       reportPath,
+      logFilePath,
       success: true,
     };
     
@@ -254,6 +326,11 @@ export async function runDocumentOrganization(
     console.error('Document organization failed:', errorMessage);
     
     // Log error
+    await logger.error('Workflow Error', `Unexpected error: ${errorMessage}`, {
+      error: errorMessage,
+      stack: error instanceof Error ? error.stack : undefined,
+    });
+    
     allErrors.push({
       path: workspacePath,
       error: `System error: ${errorMessage}`,
@@ -265,19 +342,25 @@ export async function runDocumentOrganization(
     try {
       const errorReport = createEmptyReport(workspacePath, allErrors);
       const config = ConfigManager.getDefaults();
-      const reportPath = await writeReport(errorReport, config, workspacePath);
+      const reportPath = await writeReport(errorReport, config, workspacePath, logger);
+      
+      await logger.complete(false, `Failed: ${errorMessage}`);
       
       return {
         report: errorReport,
         reportPath,
+        logFilePath: logger.getLogFilePath() || '',
         success: false,
         errorMessage,
       };
     } catch (reportError) {
       // If we can't even write the error report, return failure
+      await logger.complete(false, `Critical failure: ${errorMessage}`);
+      
       return {
         report: createEmptyReport(workspacePath, allErrors),
         reportPath: '',
+        logFilePath: logger.getLogFilePath() || '',
         success: false,
         errorMessage: `${errorMessage}. Additionally, failed to write error report: ${reportError}`,
       };
@@ -305,17 +388,26 @@ function reportProgress(
  * @param report - Organization report
  * @param config - System configuration
  * @param workspacePath - Workspace path
+ * @param logger - Workflow logger
  * @returns Path where report was written
  * @throws Error if write fails (Requirement 10.4)
  */
 async function writeReport(
   report: OrganizationReport,
   config: SystemConfig,
-  workspacePath: string
+  workspacePath: string,
+  logger: WorkflowLogger
 ): Promise<string> {
   const reportGenerator = new ReportGenerator();
-  await reportGenerator.writeToFile(report, config.output, workspacePath);
-  return path.join(workspacePath, config.output.outputPath);
+  try {
+    await reportGenerator.writeToFile(report, config.output, workspacePath);
+    const reportPath = path.join(workspacePath, config.output.outputPath);
+    return reportPath;
+  } catch (error) {
+    const errorMessage = error instanceof Error ? error.message : String(error);
+    await logger.error('Report Output', `Failed to write report: ${errorMessage}`);
+    throw error;
+  }
 }
 
 /**

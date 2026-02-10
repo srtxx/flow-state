@@ -12,19 +12,19 @@ export default function RapidIntakeAlertDialog({ alert, onConfirm, onCancel }: R
     const { t } = useTranslation();
 
     const isCritical = alert.level === 'critical';
-    const bgColor = isCritical ? 'bg-red-50' : 'bg-amber-50';
-    const borderColor = isCritical ? 'border-red-300' : 'border-amber-300';
-    const iconBgColor = isCritical ? 'bg-red-100' : 'bg-amber-100';
-    const iconColor = isCritical ? 'text-red-600' : 'text-amber-600';
-    const textColor = isCritical ? 'text-red-900' : 'text-amber-900';
+    const bgColor = isCritical ? 'bg-red-500/10' : 'bg-amber-500/10';
+    const borderColor = isCritical ? 'border-red-500/20' : 'border-amber-500/20';
+    const iconBgColor = isCritical ? 'bg-red-500/20' : 'bg-amber-500/20';
+    const iconColor = isCritical ? 'text-red-400' : 'text-amber-400';
+    const textColor = isCritical ? 'text-red-200' : 'text-amber-200';
     const buttonColor = isCritical ? 'bg-red-600 hover:bg-red-700' : 'bg-amber-600 hover:bg-amber-700';
 
     return (
         <div className="modal-overlay" onClick={onCancel}>
-            <div className="modal-content max-w-md" onClick={e => e.stopPropagation()}>
+            <div className="modal-content max-w-md bg-card border border-white/10" onClick={e => e.stopPropagation()}>
                 {/* Header */}
                 <div className="modal-header mb-4">
-                    <h2 className="modal-title flex items-center gap-2">
+                    <h2 className="modal-title flex items-center gap-2 text-primary">
                         <AlertTriangle size={24} className={iconColor} />
                         {t('alerts.rapidIntake.title')}
                     </h2>
@@ -51,23 +51,23 @@ export default function RapidIntakeAlertDialog({ alert, onConfirm, onCancel }: R
 
                 {/* Risks Section */}
                 <div className="mb-4">
-                    <h3 className="text-sm font-bold text-gray-900 mb-2">
+                    <h3 className="text-sm font-bold text-primary mb-2">
                         {t('alerts.rapidIntake.risks.title')}
                     </h3>
                     <ul className="space-y-1.5">
-                        <li className="text-sm text-gray-700 flex items-start">
+                        <li className="text-sm text-secondary flex items-start">
                             <span className="mr-2">•</span>
                             <span>{t('alerts.rapidIntake.risks.heartRate')}</span>
                         </li>
-                        <li className="text-sm text-gray-700 flex items-start">
+                        <li className="text-sm text-secondary flex items-start">
                             <span className="mr-2">•</span>
                             <span>{t('alerts.rapidIntake.risks.anxiety')}</span>
                         </li>
-                        <li className="text-sm text-gray-700 flex items-start">
+                        <li className="text-sm text-secondary flex items-start">
                             <span className="mr-2">•</span>
                             <span>{t('alerts.rapidIntake.risks.tremor')}</span>
                         </li>
-                        <li className="text-sm text-gray-700 flex items-start">
+                        <li className="text-sm text-secondary flex items-start">
                             <span className="mr-2">•</span>
                             <span>{t('alerts.rapidIntake.risks.concentration')}</span>
                         </li>
@@ -76,12 +76,12 @@ export default function RapidIntakeAlertDialog({ alert, onConfirm, onCancel }: R
 
                 {/* Recommendations Section */}
                 <div className="mb-6">
-                    <h3 className="text-sm font-bold text-gray-900 mb-2">
+                    <h3 className="text-sm font-bold text-primary mb-2">
                         {t('alerts.rapidIntake.recommendations.title')}
                     </h3>
                     <ul className="space-y-1.5">
                         {alert.recommendations.map((rec, index) => (
-                            <li key={index} className="text-sm text-gray-700 flex items-start">
+                            <li key={index} className="text-sm text-secondary flex items-start">
                                 <span className="mr-2">✓</span>
                                 <span>{rec}</span>
                             </li>
@@ -93,7 +93,7 @@ export default function RapidIntakeAlertDialog({ alert, onConfirm, onCancel }: R
                 <div className="flex gap-3">
                     <button
                         onClick={onCancel}
-                        className="flex-1 px-4 py-3 bg-gray-100 text-gray-700 rounded-xl font-semibold hover:bg-gray-200 transition-colors"
+                        className="flex-1 px-4 py-3 bg-subtle text-text-primary rounded-xl font-semibold hover:bg-white/10 transition-colors"
                     >
                         {t('alerts.rapidIntake.cancelRecord')}
                     </button>

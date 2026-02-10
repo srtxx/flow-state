@@ -1,0 +1,97 @@
+{
+  "$schema": "https://json-schema.org/draft-07/schema#",
+  "description": "カスタム設定例 - プロジェクト固有のニーズに合わせた設定",
+  
+  "scanner": {
+    "description": "カスタムスキャン設定の例",
+    
+    "includePaths": [
+      ".agent",
+      ".kiro",
+      "backlog",
+      "docs",
+      "documentation",
+      "wiki",
+      "notes",
+      "specs"
+    ],
+    "includePathsDescription": "より多くのディレクトリをスキャンする例",
+    
+    "excludePaths": [
+      "node_modules",
+      ".git",
+      "dist",
+      "build",
+      ".vercel",
+      ".npm-cache",
+      "coverage",
+      "tmp",
+      "temp",
+      ".next",
+      ".nuxt",
+      "vendor",
+      "archive"
+    ],
+    "excludePathsDescription": "より多くのディレクトリを除外する例（ビルド成果物、キャッシュ、アーカイブなど）",
+    
+    "fileExtensions": [".md", ".txt", ".rst", ".adoc"],
+    "fileExtensionsDescription": "Markdown以外のドキュメント形式も含める例（reStructuredText、AsciiDocなど）"
+  },
+  
+  "evaluator": {
+    "description": "カスタム評価設定の例",
+    
+    "weights": {
+      "referenceCount": 0.5,
+      "recency": 0.2,
+      "size": 0.05,
+      "category": 0.25
+    },
+    "weightsDescription": {
+      "note": "参照数を重視し、サイズの重要性を下げた例",
+      "referenceCount": "0.5 - 参照数を最も重視（デフォルト: 0.4）",
+      "recency": "0.2 - 最新性の重要度を下げる（デフォルト: 0.3）",
+      "size": "0.05 - サイズの重要度を大幅に下げる（デフォルト: 0.1）",
+      "category": "0.25 - カテゴリの重要度を上げる（デフォルト: 0.2）"
+    },
+    
+    "thresholds": {
+      "necessary": 70,
+      "unnecessary": 40
+    },
+    "thresholdsDescription": {
+      "note": "より厳格な判定基準の例",
+      "necessary": "70 - より高いスコアを要求（デフォルト: 60）",
+      "unnecessary": "40 - より高いスコアでも不要と判定（デフォルト: 30）",
+      "result": "40-70の範囲が「要確認」となり、慎重な判断を促す"
+    }
+  },
+  
+  "output": {
+    "description": "カスタム出力設定の例",
+    
+    "outputPath": "reports/document-analysis.md",
+    "outputPathDescription": "サブディレクトリに出力する例",
+    
+    "includeMetadata": true,
+    "includeMetadataDescription": "詳細なメタデータを含める",
+    
+    "includeReasoningDetails": true,
+    "includeReasoningDetailsDescription": "判断理由の詳細を含める"
+  },
+  
+  "useCases": [
+    "大規模プロジェクト: より多くのディレクトリをスキャン",
+    "厳格な管理: 高い閾値で慎重に判定",
+    "参照重視: ドキュメント間の関連性を最重視",
+    "多様な形式: Markdown以外のドキュメントも対象"
+  ],
+  
+  "notes": [
+    "このファイルはカスタム設定の例です",
+    "プロジェクトのニーズに合わせて調整してください",
+    "weights の合計は必ず 1.0 になるようにしてください",
+    "thresholds は necessary > unnecessary となるように設定してください",
+    "実際に使用する場合は、*Description フィールドを削除してください"
+  ]
+}

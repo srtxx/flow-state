@@ -1,0 +1,34 @@
+{
+  "description": "最小限の設定例 - 必要最小限のフィールドのみ",
+  
+  "scanner": {
+    "includePaths": [".agent", ".kiro", "docs"],
+    "excludePaths": ["node_modules", ".git", "dist"],
+    "fileExtensions": [".md"]
+  },
+  
+  "evaluator": {
+    "weights": {
+      "referenceCount": 0.4,
+      "recency": 0.3,
+      "size": 0.1,
+      "category": 0.2
+    },
+    "thresholds": {
+      "necessary": 60,
+      "unnecessary": 30
+    }
+  },
+  
+  "output": {
+    "outputPath": "DOCUMENT_ORGANIZATION_REPORT.md",
+    "includeMetadata": true,
+    "includeReasoningDetails": true
+  },
+  
+  "notes": [
+    "これは最小限の設定例です",
+    "コメントや説明フィールドを除いた、実際に使用できる形式です",
+    "この形式を config.json として保存して使用できます"
+  ]
+}

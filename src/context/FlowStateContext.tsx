@@ -99,6 +99,35 @@ export function FlowStateProvider({ children }: { children: ReactNode }) {
     const [intakeRecords, setIntakeRecords] = useLocalStorage<IntakeRecord[]>('flow-state-intakes', []);
     const [hasOnboarded, setHasOnboarded] = useLocalStorage<boolean>('flow-state-onboarded', false);
 
+    // Clean up old intake records (older than 7 days) on mount and daily
+    useEffect(() => {
+        const cleanupOldRecords = () => {
+            const sevenDaysAgo = Date.now() - (7 * 24 * 60 * 60 * 1000);
+            setIntakeRecords(prev => {
+                const filtered = prev.filter(record => record.timestamp >= sevenDaysAgo);
+                // Only update if something was removed to avoid unnecessary re-renders
+                return filtered.length !== prev.length ? filtered : prev;
+            });
+        };
+
+        // Run cleanup on mount
+        cleanupOldRecords();
+
+        // Run cleanup daily at midnight
+        const now = new Date();
+        const tomorrow = new Date(now.getFullYear(), now.getMonth(), now.getDate() + 1, 0, 0, 0);
+        const msUntilMidnight = tomorrow.getTime() - now.getTime();
+
+        const timeoutId = setTimeout(() => {
+            cleanupOldRecords();
+            // Set up daily interval after first midnight
+            const intervalId = setInterval(cleanupOldRecords, 24 * 60 * 60 * 1000);
+            return () => clearInterval(intervalId);
+        }, msUntilMidnight);
+
+        return () => clearTimeout(timeoutId);
+    }, [setIntakeRecords]);
+
     // Simulation
     const [simulationParams, setSimulationParams] = useState<{ time: string; amount: number } | undefined>(undefined);
 
@@ -122,8 +151,12 @@ export function FlowStateProvider({ children }: { children: ReactNode }) {
     // Weekly performance stats (ticket #003)
     const { weeklyStats } = useDailyScore(currentAlertness, totalCaffeineToday);
 
-    // Rapid intake alert
-    const rapidIntakeAlert = useMemo(() => checkRapidIntake(intakeRecords), [intakeRecords]);
+    // Rapid intake alert - Check only recent records (24h window)
+    const rapidIntakeAlert = useMemo(() => {
+        const last24Hours = Date.now() - (24 * 60 * 60 * 1000);
+        const recentRecords = intakeRecords.filter(r => r.timestamp >= last24Hours);
+        return checkRapidIntake(recentRecords);
+    }, [intakeRecords]);
 
     // Confirm Dialog
     const [confirmConfig, setConfirmConfig] = useState<{

@@ -143,8 +143,8 @@ export function generateAlertnessData(
     const now = new Date();
     const currentTime = now.getHours() + now.getMinutes() / 60;
 
-    // Filter to include records from the last 24 hours
-    // This ensures caffeine from previous day still affects current day
+    // Filter to include records from the last 24 hours only
+    // This ensures old data doesn't affect the chart and calculations
     const last24Hours = now.getTime() - (24 * 60 * 60 * 1000);
     const recentRecords = intakeRecords.filter(r => r.timestamp >= last24Hours);
 

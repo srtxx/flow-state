@@ -87,16 +87,16 @@ export function useAlertness(
     // Avoid-after time
     const avoidAfterTime = useMemo(() => getAvoidAfterTime(), []);
 
-    // Stats
-    // Stats
-    const totalCaffeineToday = useMemo(() => {
+    // Stats - Filter to today's records only
+    const { totalCaffeineToday, intakeCount } = useMemo(() => {
         const todayStart = new Date();
         todayStart.setHours(0, 0, 0, 0);
         const todayRecords = intakeRecords.filter(r => r.timestamp >= todayStart.getTime());
-        return todayRecords.reduce((sum, r) => sum + r.amount, 0);
+        return {
+            totalCaffeineToday: todayRecords.reduce((sum, r) => sum + r.amount, 0),
+            intakeCount: todayRecords.length
+        };
     }, [intakeRecords]);
-
-    const intakeCount = intakeRecords.length;
 
     return {
         alertnessData,

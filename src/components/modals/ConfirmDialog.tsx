@@ -34,13 +34,13 @@ export default function ConfirmDialog({
             >
                 <div className="flex flex-col items-center text-center">
                     {/* Icon */}
-                    <div className={`p-3 sm:p-4 rounded-full mb-3 sm:mb-4 ${isDestructive ? 'bg-red-50 text-red-500' : 'bg-gray-50 text-gray-800'}`}>
+                    <div className={`p-3 sm:p-4 rounded-full mb-3 sm:mb-4 ${isDestructive ? 'bg-red-500/10 text-red-400' : 'bg-subtle text-primary'}`}>
                         {isDestructive ? <AlertTriangle size={28} className="sm:w-8 sm:h-8" /> : <AlertTriangle size={28} className="sm:w-8 sm:h-8" />}
                     </div>
 
                     {/* Title */}
                     {title && (
-                        <h3 className="text-base sm:text-lg font-bold mb-2">{title}</h3>
+                        <h3 className="text-base sm:text-lg font-bold mb-2 text-primary">{title}</h3>
                     )}
 
                     {/* Message */}
@@ -61,8 +61,8 @@ export default function ConfirmDialog({
                                 onConfirm();
                                 onClose();
                             }}
-                            className={`btn-primary py-2.5 sm:py-3 text-xs sm:text-sm ${isDestructive ? 'bg-red-500 shadow-red-200' : ''}`}
-                            style={isDestructive ? { background: '#EF4444', boxShadow: '0 4px 12px rgba(239, 68, 68, 0.3)' } : {}}
+                            className={`btn-primary py-2.5 sm:py-3 text-xs sm:text-sm ${isDestructive ? 'bg-red-500 shadow-red-900/20' : ''}`}
+                            style={isDestructive ? { background: '#EF4444', boxShadow: '0 4px 12px rgba(239, 68, 68, 0.2)' } : {}}
                         >
                             {isDestructive && <X size={16} className="sm:w-[18px] sm:h-[18px]" />}
                             {!isDestructive && <Check size={16} className="sm:w-[18px] sm:h-[18px]" />}

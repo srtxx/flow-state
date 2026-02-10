@@ -8,8 +8,7 @@ export default function JournalPage() {
     const { t } = useTranslation();
     const { intakeRecords, deleteIntake, setShowIntakeModal } = useFlowState();
 
-    // Sort logic
-    // Sort logic - Show only today's records (reverse chronological)
+    // Filter and sort records - Show only today's records (from midnight)
     const todayStart = new Date();
     todayStart.setHours(0, 0, 0, 0);
     const todayRecords = intakeRecords.filter(r => r.timestamp >= todayStart.getTime());
@@ -57,7 +56,7 @@ export default function JournalPage() {
                             </p>
                             <button
                                 onClick={() => setShowIntakeModal(true)}
-                                className="btn-primary flex items-center gap-2 px-6 py-3 rounded-2xl shadow-lg hover:shadow-xl transition-all hover:scale-[1.02] active:scale-[0.98]"
+                                className="btn-primary !w-auto flex items-center gap-2 px-8 py-3 rounded-2xl shadow-lg hover:shadow-xl transition-all hover:scale-[1.02] active:scale-[0.98]"
                             >
                                 <PlusCircle size={20} />
                                 <span className="font-bold">{t('journal.empty.action')}</span>

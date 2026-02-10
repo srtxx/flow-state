@@ -21,10 +21,10 @@ function Toast({ toast, onDismiss }: ToastProps) {
     }, [toast.id, onDismiss]);
 
     const bgColor = toast.type === 'success'
-        ? 'bg-white/90 border-green-100 text-green-800'
+        ? 'bg-card/90 border-green-900/50 text-green-200'
         : toast.type === 'error'
-            ? 'bg-white/90 border-red-100 text-red-800'
-            : 'bg-white/90 border-blue-100 text-blue-800';
+            ? 'bg-card/90 border-red-900/50 text-red-200'
+            : 'bg-card/90 border-blue-900/50 text-blue-200';
 
     const iconColor = toast.type === 'success'
         ? 'text-green-500'
@@ -45,7 +45,7 @@ function Toast({ toast, onDismiss }: ToastProps) {
             <span className="text-xs sm:text-sm font-bold tracking-wide flex-1 min-w-0 truncate">{toast.message}</span>
             <button
                 onClick={() => onDismiss(toast.id)}
-                className="ml-1 sm:ml-2 text-gray-400 hover:text-gray-600 transition-colors bg-transparent p-1 rounded-full hover:bg-black/5 flex-shrink-0"
+                className="ml-1 sm:ml-2 text-gray-400 hover:text-gray-300 transition-colors bg-transparent p-1 rounded-full hover:bg-white/10 flex-shrink-0"
             >
                 <X size={14} className="sm:w-4 sm:h-4" />
             </button>

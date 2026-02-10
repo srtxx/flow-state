@@ -33,25 +33,25 @@ function CustomTooltip({ active, payload }: TooltipProps<number, string>) {
     if (active && payload && payload.length > 0) {
         const data = (payload[0] as unknown as CustomTooltipPayload).payload;
         return (
-            <div className="bg-white p-2 sm:p-3 rounded-lg shadow-lg border border-gray-100 text-xs z-50 max-w-[140px] sm:max-w-none">
-                <p className="font-bold mb-1 text-[10px] sm:text-xs">{data.time}</p>
+            <div className="bg-card p-2 sm:p-3 rounded-lg shadow-lg border border-white/10 text-xs z-50 max-w-[140px] sm:max-w-none backdrop-blur-md">
+                <p className="font-bold mb-1 text-[10px] sm:text-xs text-primary">{data.time}</p>
                 <div className="flex flex-col gap-1 sm:gap-2">
                     <div className="flex justify-between min-w-[100px] sm:min-w-[128px] items-center">
-                        <span className="text-gray-500 text-[10px] sm:text-xs">{t('dashboard.chart.tooltip.current')}:</span>
-                        <span className="font-bold text-sm sm:text-lg">{data.total.toFixed(0)}</span>
+                        <span className="text-secondary text-[10px] sm:text-xs">{t('dashboard.chart.tooltip.current')}:</span>
+                        <span className="font-bold text-sm sm:text-lg text-primary">{data.total.toFixed(0)}</span>
                     </div>
                     <div className="flex justify-between min-w-[100px] sm:min-w-[128px] items-center text-gray-400">
-                        <span className="text-[10px] sm:text-xs">{t('dashboard.chart.tooltip.baseline')}:</span>
-                        <span className="text-[10px] sm:text-xs">{data.baseline.toFixed(0)}</span>
+                        <span className="text-[10px] sm:text-xs text-secondary">{t('dashboard.chart.tooltip.baseline')}:</span>
+                        <span className="text-[10px] sm:text-xs text-secondary">{data.baseline.toFixed(0)}</span>
                     </div>
                     {data.caffeine > 0 && (
-                        <div className="flex justify-between min-w-[100px] sm:min-w-[128px] items-center text-green-600">
+                        <div className="flex justify-between min-w-[100px] sm:min-w-[128px] items-center text-green-400">
                             <span className="text-[10px] sm:text-xs">{t('dashboard.chart.tooltip.boost')}:</span>
                             <span className="text-[10px] sm:text-xs">+{data.caffeine.toFixed(0)}</span>
                         </div>
                     )}
                     {(data as any).predictedTotal > data.total && (
-                        <div className="flex justify-between min-w-[100px] sm:min-w-[128px] items-center text-blue-500">
+                        <div className="flex justify-between min-w-[100px] sm:min-w-[128px] items-center text-blue-400">
                             <span className="text-[10px] sm:text-xs">{t('dashboard.chart.tooltip.predicted')}:</span>
                             <span className="text-[10px] sm:text-xs">{(data as any).predictedTotal.toFixed(0)}</span>
                         </div>
@@ -147,6 +147,7 @@ export default function AlertnessChart({
                         axisLine={false}
                         tickLine={false}
                         domain={[0, 100]}
+                        ticks={[0, 25, 50, 75, 100]}
                         width={35}
                     />
 

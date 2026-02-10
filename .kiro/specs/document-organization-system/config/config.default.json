@@ -1,0 +1,77 @@
+{
+  "$schema": "https://json-schema.org/draft-07/schema#",
+  "description": "デフォルト設定 - Document Organization System の標準設定",
+  
+  "scanner": {
+    "description": "ドキュメントスキャナーの設定",
+    
+    "includePaths": [
+      ".agent",
+      ".kiro",
+      "backlog",
+      "docs"
+    ],
+    "includePathsDescription": "スキャン対象のディレクトリパス（ワークスペースルートからの相対パス）",
+    
+    "excludePaths": [
+      "node_modules",
+      ".git",
+      "dist",
+      "build",
+      ".vercel",
+      ".npm-cache"
+    ],
+    "excludePathsDescription": "除外するディレクトリパス（これらのディレクトリはスキャンされません）",
+    
+    "fileExtensions": [".md", ".txt"],
+    "fileExtensionsDescription": "スキャン対象のファイル拡張子"
+  },
+  
+  "evaluator": {
+    "description": "重要度評価の設定",
+    
+    "weights": {
+      "referenceCount": 0.4,
+      "recency": 0.3,
+      "size": 0.1,
+      "category": 0.2
+    },
+    "weightsDescription": {
+      "referenceCount": "参照数の重み（他のドキュメントから参照されている数）",
+      "recency": "最新性の重み（最終更新日の新しさ）",
+      "size": "サイズの重み（ファイルサイズ）",
+      "category": "カテゴリの重み（ドキュメントの種類）",
+      "note": "合計が1.0になるように設定してください"
+    },
+    
+    "thresholds": {
+      "necessary": 60,
+      "unnecessary": 30
+    },
+    "thresholdsDescription": {
+      "necessary": "この値以上のスコアは「必要」と判定されます（0-100）",
+      "unnecessary": "この値以下のスコアは「不要」と判定されます（0-100）",
+      "note": "necessary と unnecessary の間のスコアは「要確認」と判定されます"
+    }
+  },
+  
+  "output": {
+    "description": "出力設定",
+    
+    "outputPath": "DOCUMENT_ORGANIZATION_REPORT.md",
+    "outputPathDescription": "レポートファイルの出力パス（ワークスペースルートからの相対パス）",
+    
+    "includeMetadata": true,
+    "includeMetadataDescription": "レポートにメタデータ（作成日、更新日、サイズなど）を含めるかどうか",
+    
+    "includeReasoningDetails": true,
+    "includeReasoningDetailsDescription": "レポートに判断理由の詳細を含めるかどうか"
+  },
+  
+  "notes": [
+    "このファイルはデフォルト設定の例です",
+    "実際の設定ファイルでは *Description フィールドは不要です",
+    "config.json として保存して使用してください",
+    "設定を変更する場合は、config.custom-example.json を参考にしてください"
+  ]
+}

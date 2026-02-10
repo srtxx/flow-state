@@ -103,14 +103,19 @@ export function generateSmartRecommendations(
     const now = new Date();
     const currentHour = now.getHours() + now.getMinutes() / 60;
 
-    // 1日の上限チェック (400mg)
-    const totalCaffeineToday = intakeRecords.reduce((sum, r) => sum + r.amount, 0);
+    // 1日の上限チェック (400mg) - 今日の記録のみを集計
+    const todayStart = new Date();
+    todayStart.setHours(0, 0, 0, 0);
+    const todayRecords = intakeRecords.filter(r => r.timestamp >= todayStart.getTime());
+    const totalCaffeineToday = todayRecords.reduce((sum, r) => sum + r.amount, 0);
     if (totalCaffeineToday >= 400) {
         return []; // 上限到達時は推奨なし
     }
 
-    // 最近の摂取チェック（2時間以内）
-    const recentIntake = intakeRecords.find(r => {
+    // 最近の摂取チェック（2時間以内）- 24時間以内の記録のみを確認
+    const last24Hours = Date.now() - (24 * 60 * 60 * 1000);
+    const recentRecords = intakeRecords.filter(r => r.timestamp >= last24Hours);
+    const recentIntake = recentRecords.find(r => {
         const rTime = timeToDecimalHours(r.time);
         const timeDiff = currentHour - rTime;
         return timeDiff >= 0 && timeDiff < 2;

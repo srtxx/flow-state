@@ -69,7 +69,7 @@ export default function SleepInputModal({ isOpen, onClose, sleepData, onSave }: 
                                     type="time"
                                     value={start}
                                     onChange={(e) => setStart(e.target.value)}
-                                    className="w-full bg-subtle text-2xl sm:text-3xl font-light text-center py-4 rounded-2xl border border-transparent group-hover:border-white/10 focus:border-indigo-500/50 focus:bg-white focus:outline-none transition-all shadow-sm"
+                                    className="w-full bg-subtle text-2xl sm:text-3xl font-light text-center py-4 rounded-2xl border border-transparent group-hover:border-white/10 focus:border-indigo-500/50 focus:bg-card focus:outline-none transition-all shadow-sm text-primary"
                                 />
                             </div>
                         </div>
@@ -82,7 +82,7 @@ export default function SleepInputModal({ isOpen, onClose, sleepData, onSave }: 
                                     type="time"
                                     value={end}
                                     onChange={(e) => setEnd(e.target.value)}
-                                    className="w-full bg-subtle text-2xl sm:text-3xl font-light text-center py-4 rounded-2xl border border-transparent group-hover:border-white/10 focus:border-orange-500/50 focus:bg-white focus:outline-none transition-all shadow-sm"
+                                    className="w-full bg-subtle text-2xl sm:text-3xl font-light text-center py-4 rounded-2xl border border-transparent group-hover:border-white/10 focus:border-orange-500/50 focus:bg-card focus:outline-none transition-all shadow-sm text-primary"
                                 />
                             </div>
                         </div>
@@ -96,17 +96,17 @@ export default function SleepInputModal({ isOpen, onClose, sleepData, onSave }: 
                                 <button
                                     key={q}
                                     className={`relative p-3 sm:p-4 rounded-2xl border transition-all duration-300 flex flex-col items-center gap-2 group overflow-hidden ${quality === q
-                                        ? 'bg-black text-white border-black shadow-lg scale-[1.02]'
-                                        : 'bg-subtle text-secondary border-transparent hover:bg-white hover:shadow-md'
+                                        ? 'bg-primary text-bg-app border-primary shadow-[0_0_15px_rgba(255,255,255,0.1)] scale-[1.02]'
+                                        : 'bg-subtle text-secondary border-transparent hover:bg-white/5 hover:border-white/10 hover:shadow-md'
                                         }`}
                                     onClick={() => setQuality(q)}
                                 >
-                                    <div className={`p-2 rounded-full transition-colors ${quality === q ? 'bg-white/20' : 'bg-white group-hover:bg-gray-50'}`}>
+                                    <div className={`p-2 rounded-full transition-colors ${quality === q ? 'bg-black/10' : 'bg-white/5 group-hover:bg-white/10'}`}>
                                         <Star
                                             size={20}
-                                            className={`transition-colors sm:w-6 sm:h-6 ${quality === q ? 'text-white fill-white' :
-                                                    q === 'good' ? 'text-green-400' :
-                                                        q === 'fair' ? 'text-yellow-400' : 'text-red-400'
+                                            className={`transition-colors sm:w-6 sm:h-6 ${quality === q ? 'text-black fill-black' :
+                                                q === 'good' ? 'text-green-400' :
+                                                    q === 'fair' ? 'text-yellow-400' : 'text-red-400'
                                                 }`}
                                         />
                                     </div>
@@ -114,7 +114,7 @@ export default function SleepInputModal({ isOpen, onClose, sleepData, onSave }: 
 
                                     {/* Active Helper Text */}
                                     {quality === q && (
-                                        <div className="absolute inset-0 bg-gradient-to-t from-black/50 to-transparent opacity-10 pointer-events-none" />
+                                        <div className="absolute inset-0 bg-gradient-to-t from-black/20 to-transparent opacity-10 pointer-events-none" />
                                     )}
                                 </button>
                             ))}
@@ -131,7 +131,7 @@ export default function SleepInputModal({ isOpen, onClose, sleepData, onSave }: 
                         </button>
                         <button
                             onClick={handleSave}
-                            className="flex-[2] py-3.5 rounded-xl font-bold text-sm bg-black text-white shadow-lg hover:shadow-xl hover:scale-[1.02] active:scale-[0.98] transition-all flex items-center justify-center gap-2"
+                            className="flex-[2] py-3.5 rounded-xl font-bold text-sm bg-white text-black shadow-lg hover:bg-gray-100 hover:shadow-xl hover:scale-[1.02] active:scale-[0.98] transition-all flex items-center justify-center gap-2"
                         >
                             {t('save')}
                         </button>

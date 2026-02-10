@@ -122,7 +122,41 @@ For documents marked as "不要":
 - File paths where errors occurred
 - Error messages and timestamps
 
-## Usage Example
+## Usage
+
+### Command Line Interface
+
+The skill can be invoked from the command line:
+
+```bash
+# Basic usage - analyze current directory
+document-organization-system .
+
+# Analyze specific workspace
+document-organization-system --workspace-path /path/to/workspace
+
+# With custom configuration file
+document-organization-system . --config-path ./config.json
+
+# With inline configuration options
+document-organization-system . --include-paths ".kiro,.agent,docs" --output-path "my-report.md"
+
+# With verbose output
+document-organization-system . --verbose
+
+# Show help
+document-organization-system --help
+```
+
+### JSON Input (for Kiro Integration)
+
+The skill can accept parameters as JSON via stdin, which is useful for Kiro integration:
+
+```bash
+echo '{"workspacePath": ".", "includePaths": [".kiro", "docs"]}' | document-organization-system
+```
+
+### Programmatic Usage
 
 ```typescript
 import { runDocumentOrganization } from './src/index';

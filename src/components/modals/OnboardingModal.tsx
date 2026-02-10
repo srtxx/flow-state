@@ -25,31 +25,31 @@ export default function OnboardingModal({ isOpen, onComplete }: OnboardingModalP
     };
 
     return (
-        <div className="fixed inset-0 bg-white z-[200] flex flex-col items-center justify-center p-6 sm:p-8 text-center animate-in fade-in duration-500">
+        <div className="fixed inset-0 bg-bg-app z-[200] flex flex-col items-center justify-center p-6 sm:p-8 text-center animate-in fade-in duration-500">
             <div className="max-w-sm w-full">
                 {step === 1 ? (
                     <div className="flex flex-col items-center gap-6 sm:gap-8">
-                        <div className="w-20 h-20 sm:w-24 sm:h-24 bg-black text-white rounded-[2rem] flex items-center justify-center mb-4 sm:mb-6 shadow-2xl hover:scale-105 transition-transform duration-500">
+                        <div className="w-20 h-20 sm:w-24 sm:h-24 bg-white text-black rounded-[2rem] flex items-center justify-center mb-4 sm:mb-6 shadow-[0_0_30px_rgba(255,255,255,0.15)] hover:scale-105 transition-transform duration-500">
                             <Activity size={40} className="sm:w-12 sm:h-12" strokeWidth={2.5} />
                         </div>
-                        <h1 className="text-5xl sm:text-6xl font-bold tracking-tighter leading-tight bg-gradient-to-br from-gray-900 to-gray-600 bg-clip-text text-transparent pb-1">
+                        <h1 className="text-5xl sm:text-6xl font-bold tracking-tighter leading-tight bg-gradient-to-br from-white to-gray-400 bg-clip-text text-transparent pb-1">
                             {t('onboarding.title')}
                         </h1>
                         <p className="text-base sm:text-lg text-secondary leading-relaxed px-4 font-medium max-w-md">
                             {t('onboarding.description')}
                         </p>
                         <div className="grid grid-cols-2 gap-3 sm:gap-4 w-full mt-6 sm:mt-8">
-                            <div className="p-3 sm:p-4 bg-gray-50 rounded-2xl flex flex-col items-center gap-2">
-                                <Zap className="text-black w-5 h-5 sm:w-6 sm:h-6" />
-                                <span className="text-[10px] sm:text-xs font-bold uppercase tracking-wider">{t('onboarding.boost')}</span>
+                            <div className="p-3 sm:p-4 bg-subtle rounded-2xl flex flex-col items-center gap-2 border border-white/5">
+                                <Zap className="text-white w-5 h-5 sm:w-6 sm:h-6" />
+                                <span className="text-[10px] sm:text-xs font-bold uppercase tracking-wider text-secondary">{t('onboarding.boost')}</span>
                             </div>
-                            <div className="p-3 sm:p-4 bg-gray-50 rounded-2xl flex flex-col items-center gap-2">
-                                <Moon className="text-black w-5 h-5 sm:w-6 sm:h-6" />
-                                <span className="text-[10px] sm:text-xs font-bold uppercase tracking-wider">{t('onboarding.recover')}</span>
+                            <div className="p-3 sm:p-4 bg-subtle rounded-2xl flex flex-col items-center gap-2 border border-white/5">
+                                <Moon className="text-white w-5 h-5 sm:w-6 sm:h-6" />
+                                <span className="text-[10px] sm:text-xs font-bold uppercase tracking-wider text-secondary">{t('onboarding.recover')}</span>
                             </div>
                         </div>
                         <button
-                            className="w-full bg-black text-white py-3.5 sm:py-4 rounded-2xl font-bold mt-6 sm:mt-8 flex items-center justify-center gap-2 hover:scale-[1.02] transition-transform text-sm sm:text-base"
+                            className="w-full bg-white text-black py-3.5 sm:py-4 rounded-2xl font-bold mt-6 sm:mt-8 flex items-center justify-center gap-2 hover:scale-[1.02] transition-transform text-sm sm:text-base shadow-lg hover:shadow-white/20"
                             onClick={() => setStep(2)}
                         >
                             {t('onboarding.getStarted')} <ArrowRight size={16} className="sm:w-[18px] sm:h-[18px]" />
@@ -57,7 +57,7 @@ export default function OnboardingModal({ isOpen, onComplete }: OnboardingModalP
                     </div>
                 ) : (
                     <div className="flex flex-col items-center gap-4 sm:gap-6 animate-in slide-in-from-right duration-300">
-                        <h2 className="text-xl sm:text-2xl font-bold">{t('onboarding.sleepGoal')}</h2>
+                        <h2 className="text-xl sm:text-2xl font-bold text-primary">{t('onboarding.sleepGoal')}</h2>
 
 
                         <div className="relative w-full py-4 sm:py-6">
@@ -76,7 +76,7 @@ export default function OnboardingModal({ isOpen, onComplete }: OnboardingModalP
                                     step="0.5"
                                     value={avgHours}
                                     onChange={(e) => setAvgHours(parseFloat(e.target.value))}
-                                    className="w-full accent-black h-2 bg-gray-200 rounded-lg appearance-none cursor-pointer"
+                                    className="w-full accent-white h-2 bg-white/20 rounded-lg appearance-none cursor-pointer"
                                 />
                                 <div className="flex justify-between mt-3 text-[10px] sm:text-xs text-secondary font-medium px-1">
                                     <span>4h</span>
@@ -91,7 +91,7 @@ export default function OnboardingModal({ isOpen, onComplete }: OnboardingModalP
                         </div>
 
                         <button
-                            className="w-full bg-black text-white py-3.5 sm:py-4 rounded-2xl font-bold mt-3 sm:mt-4 text-sm sm:text-base"
+                            className="w-full bg-white text-black py-3.5 sm:py-4 rounded-2xl font-bold mt-3 sm:mt-4 text-sm sm:text-base shadow-lg hover:shadow-white/20 hover:scale-[1.02] transition-transform"
                             onClick={handleComplete}
                         >
                             {t('onboarding.start')}

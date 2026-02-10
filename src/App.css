@@ -1264,3 +1264,9 @@ body {
     border-color: rgba(255, 255, 255, 0.1);
   }
 }
+
+/* --- Responsive Adjustments --- */
+/* Reverted to keep mobile scale on all devices */
+:root {
+  --max-width: 480px;
+}

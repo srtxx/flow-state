@@ -1,8 +1,8 @@
-import { Bell, X, Zap, Coffee, Clock } from 'lucide-react';
+import { Bell, X, Zap, Coffee } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
-import { AlertnessChart, SmartRecommendationCard } from '../components';
+import { AlertnessChart } from '../components';
 import { useFlowState } from '../context/FlowStateContext';
-import { estimateCaffeineAtSleep, getCurrentTimeString, timeToDecimalHours, CHART_START_HOUR } from '../lib/caffeine';
+import { estimateCaffeineAtSleep, getCurrentTimeString, CHART_START_HOUR } from '../lib/caffeine';
 
 export default function DashboardPage() {
     const { t } = useTranslation();
@@ -16,14 +16,12 @@ export default function DashboardPage() {
         totalCaffeineToday,
         recommendation,
         smartRecommendations,
-        dismissRecommendation,
         followRecommendation,
     } = useFlowState();
 
     // Filter records to show only those within the chart's 24h window (starting at CHART_START_HOUR)
     // The chart goes from CHART_START_HOUR today to CHART_START_HOUR tomorrow
     const visibleRecords = intakeRecords.filter(record => {
-        const recordTime = timeToDecimalHours(record.time);
         const now = new Date();
         const currentHour = now.getHours() + now.getMinutes() / 60;
 
@@ -60,27 +58,25 @@ export default function DashboardPage() {
         statusText = t('dashboard.status.low');
     }
 
-    // Calculate Peak Time
-    const getPeakTime = () => {
-        if (!alertnessData || alertnessData.length === 0) return '--:--';
-        const max = Math.max(...alertnessData.map(d => d.total));
-        const peak = alertnessData.find(d => d.total === max);
-        return peak ? peak.time : '--:--';
-    };
-    const peakTimeStr = getPeakTime();
 
     // Calculate Active Caffeine (approximate remaining in body now)
-    const activeCaffeine = Math.round(intakeRecords.reduce((sum, record) => {
+    // Only consider records from the last 24 hours (caffeine half-life is ~5 hours, so 24h is safe)
+    const last24Hours = Date.now() - (24 * 60 * 60 * 1000);
+    const recentRecords = intakeRecords.filter(r => r.timestamp >= last24Hours);
+    const activeCaffeine = Math.round(recentRecords.reduce((sum, record) => {
         return sum + estimateCaffeineAtSleep(record.amount, record.time, getCurrentTimeString());
     }, 0));
+
+    // Get current recommendation to display
+    const currentRecommendation = smartRecommendations.length > 0 ? smartRecommendations[0] : null;
 
     return (
         <div className="dashboard-page pb-24 space-y-4 sm:space-y-6">
             {/* Header: Score & Status */}
-            <div className="flex items-end justify-between px-4 pt-4 sm:pt-6">
+            <div className="flex flex-wrap items-end justify-between px-4 pt-4 sm:pt-6 gap-y-4">
                 <div>
                     <div className="flex items-baseline gap-2 sm:gap-3">
-                        <span className="text-7xl sm:text-8xl font-bold tracking-tighter text-primary leading-none">{Math.round(currentAlertness)}</span>
+                        <span className="text-6xl sm:text-7xl md:text-8xl font-bold tracking-tighter text-primary leading-none">{Math.round(currentAlertness)}</span>
                         <span className="text-xs sm:text-sm font-bold text-secondary uppercase tracking-wider mb-2">{t('dashboard.currentAlertness')}</span>
                     </div>
                 </div>
@@ -110,11 +106,25 @@ export default function DashboardPage() {
 
             {/* Quick Stats Grid */}
             <div className="grid grid-cols-3 gap-3 px-4">
-                <div className="card-soft !p-3 flex flex-col items-center justify-center gap-1 hover:bg-subtle transition-colors">
-                    <Clock size={16} className="text-secondary mb-1" />
-                    <span className="text-[10px] text-secondary uppercase font-bold tracking-wider">{t('dashboard.stats.peakTime')}</span>
-                    <span className="text-lg font-bold text-primary">{peakTimeStr}</span>
-                </div>
+                {/* Recommendation Tile (Replacing Peak Time) */}
+                <button
+                    className={`card-soft !p-3 flex flex-col items-center justify-center gap-1 transition-colors ${currentRecommendation
+                        ? 'bg-accent-primary/5 hover:bg-accent-primary/10 border-accent-primary/20 cursor-pointer'
+                        : 'opacity-50 cursor-default'
+                        }`}
+                    onClick={() => currentRecommendation && followRecommendation(currentRecommendation)}
+                    disabled={!currentRecommendation}
+                >
+                    <Zap size={16} className={currentRecommendation ? "text-accent-primary mb-1" : "text-secondary mb-1"} />
+                    <span className="text-[10px] text-secondary uppercase font-bold tracking-wider">{t('dashboard.recommendation')}</span>
+                    <span className={`text-lg font-bold ${currentRecommendation ? "text-accent-primary" : "text-secondary"}`}>
+                        {currentRecommendation ? currentRecommendation.recommendedTime : '--:--'}
+                    </span>
+                    {currentRecommendation && (
+                        <span className="text-[10px] text-secondary font-medium">{currentRecommendation.recommendedAmount}mg</span>
+                    )}
+                </button>
+
                 <div className="card-soft !p-3 flex flex-col items-center justify-center gap-1 hover:bg-subtle transition-colors">
                     <Zap size={16} className="text-secondary mb-1" />
                     <span className="text-[10px] text-secondary uppercase font-bold tracking-wider">{t('dashboard.stats.activeCaffeine')}</span>
@@ -150,21 +160,6 @@ export default function DashboardPage() {
                     </div>
                 )}
             </div>
-
-            {/* Smart Recommendation Card */}
-            {smartRecommendations.length > 0 && (
-                <div className="px-4 pb-4">
-                    <SmartRecommendationCard
-                        recommendation={smartRecommendations[0]}
-                        onRecordNow={() => followRecommendation(smartRecommendations[0])}
-                        onRemindLater={() => {
-                            dismissRecommendation(smartRecommendations[0].id);
-                            alert('30分後にリマインダーを設定しました（簡易実装）');
-                        }}
-                        onDismiss={() => dismissRecommendation(smartRecommendations[0].id)}
-                    />
-                </div>
-            )}
 
             {/* Floating Action Button */}
             <button

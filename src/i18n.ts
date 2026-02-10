@@ -16,9 +16,9 @@ const resources = {
 
             // Navigation
             nav: {
-                flow: 'FLOW',
-                journal: 'JOURNAL',
-                profile: 'PROFILE'
+                flow: 'フロー',
+                journal: '履歴',
+                profile: 'プロフィール'
             },
 
             // Dashboard
@@ -59,6 +59,7 @@ const resources = {
                 quickAdd: 'クイック追加',
                 custom: 'カスタム',
                 amount: '量 (mg)',
+                caffeineContent: 'カフェイン含有量',
                 time: '時刻',
                 record: '記録',
                 recorded: '記録しました',
@@ -79,9 +80,9 @@ const resources = {
                 bedtime: '就寝時刻',
                 wakeUp: '起床時刻',
                 quality: '睡眠の質',
-                poor: 'poor',
-                fair: 'fair',
-                good: 'good',
+                poor: '不足',
+                fair: '普通',
+                good: '十分',
                 duration: '睡眠時間',
                 target: '目標'
             },
@@ -90,7 +91,7 @@ const resources = {
             journal: {
                 title: '摂取履歴',
                 totalIntake: '合計摂取量',
-                history: 'HISTORY',
+                history: '履歴',
                 noRecords: '記録がありません',
                 addSuggestion: 'カフェインを追加してここに表示',
                 empty: {
