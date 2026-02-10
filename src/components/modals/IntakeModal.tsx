@@ -211,7 +211,7 @@ export default function IntakeModal({ isOpen, onClose, onAdd }: IntakeModalProps
                                 <button
                                     key={drink.name}
                                     className={`relative flex flex-col items-center justify-center p-2 rounded-xl border transition-all duration-200 h-[100px] ${isSelected
-                                        ? 'bg-primary text-bg-app border-primary shadow-[0_0_15px_rgba(255,255,255,0.15)] scale-[1.02]'
+                                        ? 'bg-accent-primary text-bg-app border-accent-primary shadow-[0_0_15px_rgba(255,255,255,0.15)] scale-[1.02]'
                                         : 'bg-subtle border-transparent hover:bg-white/5 hover:border-white/10 border-white/5'
                                         }`}
                                     onClick={() => handleDrinkClick(drink)}

@@ -69,7 +69,8 @@ export default function SleepInputModal({ isOpen, onClose, sleepData, onSave }: 
                                     type="time"
                                     value={start}
                                     onChange={(e) => setStart(e.target.value)}
-                                    className="w-full bg-subtle text-2xl sm:text-3xl font-light text-center py-4 rounded-2xl border border-transparent group-hover:border-white/10 focus:border-indigo-500/50 focus:bg-card focus:outline-none transition-all shadow-sm text-primary"
+                                    style={{ colorScheme: 'dark' }}
+                                    className="w-full bg-subtle text-2xl sm:text-3xl font-medium text-center py-4 rounded-2xl border border-transparent group-hover:border-white/10 focus:border-indigo-500/50 focus:bg-card focus:outline-none transition-all shadow-sm text-primary"
                                 />
                             </div>
                         </div>
@@ -82,7 +83,8 @@ export default function SleepInputModal({ isOpen, onClose, sleepData, onSave }: 
                                     type="time"
                                     value={end}
                                     onChange={(e) => setEnd(e.target.value)}
-                                    className="w-full bg-subtle text-2xl sm:text-3xl font-light text-center py-4 rounded-2xl border border-transparent group-hover:border-white/10 focus:border-orange-500/50 focus:bg-card focus:outline-none transition-all shadow-sm text-primary"
+                                    style={{ colorScheme: 'dark' }}
+                                    className="w-full bg-subtle text-2xl sm:text-3xl font-medium text-center py-4 rounded-2xl border border-transparent group-hover:border-white/10 focus:border-orange-500/50 focus:bg-card focus:outline-none transition-all shadow-sm text-primary"
                                 />
                             </div>
                         </div>
@@ -96,7 +98,7 @@ export default function SleepInputModal({ isOpen, onClose, sleepData, onSave }: 
                                 <button
                                     key={q}
                                     className={`relative p-3 sm:p-4 rounded-2xl border transition-all duration-300 flex flex-col items-center gap-2 group overflow-hidden ${quality === q
-                                        ? 'bg-primary text-bg-app border-primary shadow-[0_0_15px_rgba(255,255,255,0.1)] scale-[1.02]'
+                                        ? 'bg-accent-primary text-bg-app border-accent-primary shadow-[0_0_15px_rgba(255,255,255,0.1)] scale-[1.02]'
                                         : 'bg-subtle text-secondary border-transparent hover:bg-white/5 hover:border-white/10 hover:shadow-md'
                                         }`}
                                     onClick={() => setQuality(q)}
