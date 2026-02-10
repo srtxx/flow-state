@@ -5,6 +5,9 @@ const CAFFEINE_HALF_LIFE = 5;
 // Peak absorption time in hours (45 minutes)
 const PEAK_ABSORPTION_TIME = 0.75;
 
+// Chart start hour (6:00 AM)
+export const CHART_START_HOUR = 6;
+
 /**
  * Calculate caffeine effect at a given time since intake
  * 

@@ -135,6 +135,7 @@ export class ReportGenerator {
    * @param report - Organization report
    * @param config - Output configuration
    * @param workspacePath - Workspace root path
+   * @throws Error if file cannot be written (Requirement 10.4)
    */
   async writeToFile(
     report: OrganizationReport,
@@ -145,10 +146,19 @@ export class ReportGenerator {
     const outputPath = path.join(workspacePath, config.outputPath);
     
     try {
+      // Ensure the directory exists
+      const outputDir = path.dirname(outputPath);
+      await fs.mkdir(outputDir, { recursive: true });
+      
+      // Write the file
       await fs.writeFile(outputPath, markdown, 'utf-8');
+      
+      console.log(`Report successfully written to: ${outputPath}`);
     } catch (error) {
+      // Requirement 10.4: Return clear error message if output cannot be written
+      const errorMessage = error instanceof Error ? error.message : String(error);
       throw new Error(
-        `Failed to write report to ${outputPath}: ${error instanceof Error ? error.message : String(error)}`
+        `Failed to write report to ${outputPath}: ${errorMessage}. Please check file permissions and disk space.`
       );
     }
   }

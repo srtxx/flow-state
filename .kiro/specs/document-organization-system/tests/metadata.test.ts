@@ -112,13 +112,24 @@ describe('MetadataCollector', () => {
       expect(metadata.lineCount).toBe(1);
     });
 
-    it('should throw error for non-existent file', async () => {
+    it('should return default values for non-existent file', async () => {
       const document: ScannedDocument = {
         path: 'nonexistent.md',
         absolutePath: path.join(tempDir, 'nonexistent.md'),
       };
 
-      await expect(collector.collect(document)).rejects.toThrow();
+      // Should not throw, but return default values (Requirement 10.3)
+      const metadata = await collector.collect(document);
+      
+      expect(metadata.path).toBe('nonexistent.md');
+      expect(metadata.sizeBytes).toBe(0);
+      expect(metadata.lineCount).toBe(0);
+      expect(metadata.category).toBe(DocumentCategory.OTHER);
+      
+      // Should have logged an error
+      const errors = collector.getErrors();
+      expect(errors.length).toBeGreaterThan(0);
+      expect(errors[0].severity).toBe('error');
     });
 
     it('should handle files with special characters in content', async () => {

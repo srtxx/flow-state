@@ -59,7 +59,7 @@ describe('DuplicateChecker', () => {
         },
       ];
       
-      const result = await checker.checkDuplicates(docs);
+      const result = await checker.checkDuplicates(docs, tempDir);
       
       // First file should not be marked as duplicate
       const info1 = result.get(file1);
@@ -103,7 +103,7 @@ describe('DuplicateChecker', () => {
         },
       ];
       
-      const result = await checker.checkDuplicates(docs);
+      const result = await checker.checkDuplicates(docs, tempDir);
       
       const info1 = result.get(file1);
       const info2 = result.get(file2);
@@ -139,7 +139,7 @@ describe('DuplicateChecker', () => {
         },
       ];
       
-      const result = await checker.checkDuplicates(docs);
+      const result = await checker.checkDuplicates(docs, tempDir);
       
       // Empty files should be detected as duplicates
       const info1 = result.get(file1);
@@ -181,7 +181,7 @@ describe('DuplicateChecker', () => {
         },
       ];
       
-      const result = await checker.checkDuplicates(docs);
+      const result = await checker.checkDuplicates(docs, tempDir);
       
       const info1 = result.get(file1);
       const info2 = result.get(file2);
@@ -225,7 +225,7 @@ describe('DuplicateChecker', () => {
         },
       ];
       
-      const result = await checker.checkDuplicates(docs);
+      const result = await checker.checkDuplicates(docs, tempDir);
       
       const info1 = result.get(file1);
       const info2 = result.get(file2);
@@ -262,7 +262,7 @@ describe('DuplicateChecker', () => {
         },
       ];
       
-      const result = await checker.checkDuplicates(docs);
+      const result = await checker.checkDuplicates(docs, tempDir);
       
       // Zero-size files should be exact duplicates, not just similar
       const info2 = result.get(file2);
@@ -308,7 +308,7 @@ describe('DuplicateChecker', () => {
         },
       ];
       
-      const result = await checker.checkDuplicates(docs);
+      const result = await checker.checkDuplicates(docs, tempDir);
       
       const info1 = result.get(file1);
       const info2 = result.get(file2);
@@ -342,7 +342,7 @@ describe('DuplicateChecker', () => {
         },
       ];
       
-      const result = await checker.checkDuplicates(docs);
+      const result = await checker.checkDuplicates(docs, tempDir);
       
       // Should create a default entry for the missing file
       const info = result.get(nonExistentFile);

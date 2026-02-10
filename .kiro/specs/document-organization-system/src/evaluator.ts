@@ -6,10 +6,11 @@
  * - Importance evaluation (ImportanceEvaluator)
  * - Status assignment (StatusAssigner)
  * 
- * Validates: Requirements 4.1-4.5, 5.1-5.5, 6.1-6.5
+ * Validates: Requirements 4.1-4.5, 5.1-5.5, 6.1-6.5, 10.1
  */
 
 import * as fs from 'fs/promises';
+import * as path from 'path';
 import * as crypto from 'crypto';
 import {
   DocumentMetadata,
@@ -19,6 +20,7 @@ import {
   ScoreFactor,
   DocumentCategory,
   DocumentStatus,
+  ErrorInfo,
 } from './types.js';
 
 /**
@@ -26,23 +28,55 @@ import {
  * 
  * Responsible for detecting duplicate and similar documents
  * 
- * Validates: Requirements 4.1, 4.2, 4.3, 4.4, 4.5
+ * Validates: Requirements 4.1, 4.2, 4.3, 4.4, 4.5, 10.1
  */
 export class DuplicateChecker {
+  private errors: ErrorInfo[];
+
+  constructor() {
+    this.errors = [];
+  }
+
+  /**
+   * Get errors encountered during duplicate checking
+   * 
+   * @returns Array of error information
+   */
+  getErrors(): ErrorInfo[] {
+    return this.errors;
+  }
+
+  /**
+   * Clear accumulated errors
+   */
+  clearErrors(): void {
+    this.errors = [];
+  }
   /**
    * Check for duplicates and similar documents
    * 
    * @param documents - Array of documents with metadata
+   * @param workspacePath - Absolute path to the workspace root
    * @returns Promise resolving to a map of document path to duplicate info
+   * 
+   * Requirements:
+   * - 10.1: Handle file read errors gracefully
    */
-  async checkDuplicates(documents: DocumentMetadata[]): Promise<Map<string, DuplicateInfo>> {
+  async checkDuplicates(
+    documents: DocumentMetadata[],
+    workspacePath: string
+  ): Promise<Map<string, DuplicateInfo>> {
     const duplicateMap = new Map<string, DuplicateInfo>();
     const hashToPath = new Map<string, string>();
+    
+    // Clear previous errors
+    this.errors = [];
     
     // First pass: Calculate hashes and detect exact duplicates
     for (const doc of documents) {
       try {
-        const hash = await this.calculateHash(doc.path);
+        const absolutePath = path.join(workspacePath, doc.path);
+        const hash = await this.calculateHash(absolutePath);
         
         // Check if we've seen this hash before (exact duplicate)
         const existingPath = hashToPath.get(hash);
@@ -64,7 +98,13 @@ export class DuplicateChecker {
           hashToPath.set(hash, doc.path);
         }
       } catch (error) {
-        // If we can't read the file, create a default entry
+        // If we can't read the file, create a default entry and log error (Requirement 10.1)
+        this.logError(
+          doc.path,
+          `Cannot calculate hash: ${error instanceof Error ? error.message : String(error)}`,
+          'warning'
+        );
+        
         duplicateMap.set(doc.path, {
           path: doc.path,
           duplicateOf: null,
@@ -113,25 +153,44 @@ export class DuplicateChecker {
   }
 
   /**
+   * Log an error encountered during duplicate checking
+   * 
+   * @param filePath - Path where error occurred
+   * @param message - Error message
+   * @param severity - Error severity level
+   * 
+   * Requirement 10.5: Record errors for inclusion in report
+   */
+  private logError(filePath: string, message: string, severity: 'warning' | 'error'): void {
+    this.errors.push({
+      path: filePath,
+      error: message,
+      timestamp: new Date(),
+      severity,
+    });
+    
+    // Also log to console for immediate visibility
+    if (severity === 'error') {
+      console.error(`[DuplicateChecker Error] ${filePath}: ${message}`);
+    } else {
+      console.warn(`[DuplicateChecker Warning] ${filePath}: ${message}`);
+    }
+  }
+
+  /**
    * Calculate content hash for a document
    * 
    * Uses SHA-256 hash of the file content for duplicate detection
    * 
    * @param filePath - Path to the file (can be relative or absolute)
    * @returns Promise resolving to the content hash
-   * @throws Error if file cannot be read
+   * @throws Error if file cannot be read (Requirement 10.1)
    */
   private async calculateHash(filePath: string): Promise<string> {
-    try {
-      const content = await fs.readFile(filePath, 'utf-8');
-      const hash = crypto.createHash('sha256');
-      hash.update(content);
-      return hash.digest('hex');
-    } catch (error) {
-      throw new Error(
-        `Failed to calculate hash for ${filePath}: ${error instanceof Error ? error.message : String(error)}`
-      );
-    }
+    const content = await fs.readFile(filePath, 'utf-8');
+    const hash = crypto.createHash('sha256');
+    hash.update(content);
+    return hash.digest('hex');
   }
 
   /**

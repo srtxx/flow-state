@@ -5,6 +5,9 @@
   "type": "module",
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
+  "bin": {
+    "document-organization-system": "./dist/cli.js"
+  },
   "scripts": {
     "build": "tsc",
     "test": "vitest run",

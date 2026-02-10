@@ -2,7 +2,7 @@ import { Bell, X, Zap, Coffee, Clock } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
 import { AlertnessChart, SmartRecommendationCard } from '../components';
 import { useFlowState } from '../context/FlowStateContext';
-import { estimateCaffeineAtSleep, getCurrentTimeString } from '../lib/caffeine';
+import { estimateCaffeineAtSleep, getCurrentTimeString, timeToDecimalHours, CHART_START_HOUR } from '../lib/caffeine';
 
 export default function DashboardPage() {
     const { t } = useTranslation();
@@ -19,6 +19,29 @@ export default function DashboardPage() {
         dismissRecommendation,
         followRecommendation,
     } = useFlowState();
+
+    // Filter records to show only those within the chart's 24h window (starting at CHART_START_HOUR)
+    // The chart goes from CHART_START_HOUR today to CHART_START_HOUR tomorrow
+    const visibleRecords = intakeRecords.filter(record => {
+        const recordTime = timeToDecimalHours(record.time);
+        const now = new Date();
+        const currentHour = now.getHours() + now.getMinutes() / 60;
+
+        // Determine the start time of the chart window relative to now
+        // If current time < CHART_START_HOUR, we are in the "early morning" of the chart started yesterday
+        // If current time >= CHART_START_HOUR, we are in the chart started today
+        const isEarlyMorning = currentHour < CHART_START_HOUR;
+        const chartStartTimestamp = new Date();
+        chartStartTimestamp.setHours(CHART_START_HOUR, 0, 0, 0);
+
+        if (isEarlyMorning) {
+            // Chart started yesterday at 6:00 AM
+            chartStartTimestamp.setDate(chartStartTimestamp.getDate() - 1);
+        }
+
+        // Compare record timestamp
+        return record.timestamp >= chartStartTimestamp.getTime();
+    });
 
     const onRecordClick = () => setShowIntakeModal(true);
 
@@ -63,9 +86,9 @@ export default function DashboardPage() {
                 </div>
                 <div className="flex flex-col items-end gap-1 mb-2">
                     <div className={`px-3 py-1.5 rounded-full flex items-center gap-2 border ${isOverLimit ? 'bg-red-500/10 text-red-500 border-red-500/20' :
-                            currentAlertness > 80 ? 'bg-green-500/10 text-green-500 border-green-500/20' :
-                                currentAlertness < 40 ? 'bg-orange-500/10 text-orange-500 border-orange-500/20' :
-                                    'bg-blue-500/10 text-blue-500 border-blue-500/20'
+                        currentAlertness > 80 ? 'bg-green-500/10 text-green-500 border-green-500/20' :
+                            currentAlertness < 40 ? 'bg-orange-500/10 text-orange-500 border-orange-500/20' :
+                                'bg-blue-500/10 text-blue-500 border-blue-500/20'
                         }`}>
                         <span className="w-2 h-2 rounded-full bg-current animate-pulse"></span>
                         <span className="text-xs sm:text-sm font-bold">{statusText}</span>
@@ -78,7 +101,7 @@ export default function DashboardPage() {
                 <div className="chart-container-clean h-[240px] sm:h-[280px]">
                     <AlertnessChart
                         data={alertnessData}
-                        intakeRecords={intakeRecords}
+                        intakeRecords={visibleRecords}
                         showBaseline={true}
                         height={280}
                     />

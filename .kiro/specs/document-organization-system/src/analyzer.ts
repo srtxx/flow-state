@@ -6,8 +6,9 @@
  * - Extracts file path references
  * - Builds reference graph
  * - Counts incoming references
+ * - Handles errors gracefully
  * 
- * Validates: Requirements 3.1, 3.2, 3.3, 3.4, 3.5
+ * Validates: Requirements 3.1, 3.2, 3.3, 3.4, 3.5, 10.1
  */
 
 import * as fs from 'fs/promises';
@@ -18,6 +19,7 @@ import {
   ReferenceType,
   ReferenceGraph,
   DocumentNode,
+  ErrorInfo,
 } from './types.js';
 
 /**
@@ -26,6 +28,27 @@ import {
  * Analyzes reference relationships between documents
  */
 export class ReferenceAnalyzer {
+  private errors: ErrorInfo[];
+
+  constructor() {
+    this.errors = [];
+  }
+
+  /**
+   * Get errors encountered during reference analysis
+   * 
+   * @returns Array of error information
+   */
+  getErrors(): ErrorInfo[] {
+    return this.errors;
+  }
+
+  /**
+   * Clear accumulated errors
+   */
+  clearErrors(): void {
+    this.errors = [];
+  }
   /**
    * Analyze reference relationships between documents
    * 
@@ -39,12 +62,16 @@ export class ReferenceAnalyzer {
    * - 3.3: Record source and target document paths
    * - 3.4: Build reference graph showing all relationships
    * - 3.5: Count incoming references for each document
+   * - 10.1: Handle file read errors gracefully
    */
   async analyze(
     documents: DocumentMetadata[],
     workspacePath: string
   ): Promise<ReferenceGraph> {
     const allReferences: DocumentReference[] = [];
+    
+    // Clear previous errors
+    this.errors = [];
     
     // Extract references from each document
     for (const doc of documents) {
@@ -54,14 +81,42 @@ export class ReferenceAnalyzer {
         const references = await this.extractReferences(content, doc.path, workspacePath);
         allReferences.push(...references);
       } catch (error) {
-        // Log error but continue processing
-        const errorMessage = error instanceof Error ? error.message : String(error);
-        console.warn(`Error analyzing references in ${doc.path}: ${errorMessage}`);
+        // Log error but continue processing (Requirement 10.1)
+        this.logError(
+          doc.path,
+          `Cannot read file for reference analysis: ${error instanceof Error ? error.message : String(error)}`,
+          'warning'
+        );
       }
     }
     
     // Build and return the reference graph
     return this.buildGraph(allReferences, documents);
+  }
+
+  /**
+   * Log an error encountered during reference analysis
+   * 
+   * @param filePath - Path where error occurred
+   * @param message - Error message
+   * @param severity - Error severity level
+   * 
+   * Requirement 10.5: Record errors for inclusion in report
+   */
+  private logError(filePath: string, message: string, severity: 'warning' | 'error'): void {
+    this.errors.push({
+      path: filePath,
+      error: message,
+      timestamp: new Date(),
+      severity,
+    });
+    
+    // Also log to console for immediate visibility
+    if (severity === 'error') {
+      console.error(`[ReferenceAnalyzer Error] ${filePath}: ${message}`);
+    } else {
+      console.warn(`[ReferenceAnalyzer Warning] ${filePath}: ${message}`);
+    }
   }
 
   /**

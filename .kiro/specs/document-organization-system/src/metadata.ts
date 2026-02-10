@@ -5,13 +5,14 @@
  * - File statistics (creation date, modification date, size)
  * - Line count
  * - Category determination
+ * - Error handling with default values
  * 
- * Validates: Requirements 2.1, 2.2, 2.3, 2.4, 2.5, 2.6
+ * Validates: Requirements 2.1, 2.2, 2.3, 2.4, 2.5, 2.6, 10.1, 10.3
  */
 
 import * as fs from 'fs/promises';
 import * as path from 'path';
-import { DocumentMetadata, DocumentCategory, ScannedDocument } from './types.js';
+import { DocumentMetadata, DocumentCategory, ScannedDocument, ErrorInfo } from './types.js';
 
 /**
  * MetadataCollector class
@@ -19,12 +20,36 @@ import { DocumentMetadata, DocumentCategory, ScannedDocument } from './types.js'
  * Responsible for collecting metadata from scanned documents
  */
 export class MetadataCollector {
+  private errors: ErrorInfo[];
+
+  constructor() {
+    this.errors = [];
+  }
+
+  /**
+   * Get errors encountered during metadata collection
+   * 
+   * @returns Array of error information
+   */
+  getErrors(): ErrorInfo[] {
+    return this.errors;
+  }
+
+  /**
+   * Clear accumulated errors
+   */
+  clearErrors(): void {
+    this.errors = [];
+  }
   /**
    * Collect metadata for a document
    * 
    * @param document - The scanned document to collect metadata for
    * @returns Promise resolving to document metadata
-   * @throws Error if file cannot be read or stats cannot be obtained
+   * 
+   * Requirements:
+   * - 10.1: Handle file read errors gracefully
+   * - 10.3: Use default values if metadata extraction fails
    */
   async collect(document: ScannedDocument): Promise<DocumentMetadata> {
     try {
@@ -32,7 +57,21 @@ export class MetadataCollector {
       const stats = await fs.stat(document.absolutePath);
       
       // Read file content for line counting
-      const content = await fs.readFile(document.absolutePath, 'utf-8');
+      let content: string;
+      let lineCount: number;
+      
+      try {
+        content = await fs.readFile(document.absolutePath, 'utf-8');
+        lineCount = this.countLines(content);
+      } catch (readError) {
+        // If file cannot be read, log error and use default values
+        this.logError(
+          document.path,
+          `Cannot read file content: ${readError instanceof Error ? readError.message : String(readError)}`,
+          'warning'
+        );
+        lineCount = 0; // Default line count
+      }
       
       // Collect all metadata
       return {
@@ -40,13 +79,52 @@ export class MetadataCollector {
         createdAt: stats.birthtime,
         modifiedAt: stats.mtime,
         sizeBytes: stats.size,
-        lineCount: this.countLines(content),
+        lineCount,
         category: this.determineCategory(document.path),
       };
     } catch (error) {
-      throw new Error(
-        `Failed to collect metadata for ${document.path}: ${error instanceof Error ? error.message : String(error)}`
+      // If stats cannot be obtained, use default values (Requirement 10.3)
+      this.logError(
+        document.path,
+        `Failed to collect metadata: ${error instanceof Error ? error.message : String(error)}`,
+        'error'
       );
+      
+      // Return metadata with default values
+      const now = new Date();
+      return {
+        path: document.path,
+        createdAt: now,
+        modifiedAt: now,
+        sizeBytes: 0,
+        lineCount: 0,
+        category: DocumentCategory.OTHER,
+      };
+    }
+  }
+
+  /**
+   * Log an error encountered during metadata collection
+   * 
+   * @param filePath - Path where error occurred
+   * @param message - Error message
+   * @param severity - Error severity level
+   * 
+   * Requirement 10.5: Record errors for inclusion in report
+   */
+  private logError(filePath: string, message: string, severity: 'warning' | 'error'): void {
+    this.errors.push({
+      path: filePath,
+      error: message,
+      timestamp: new Date(),
+      severity,
+    });
+    
+    // Also log to console for immediate visibility
+    if (severity === 'error') {
+      console.error(`[MetadataCollector Error] ${filePath}: ${message}`);
+    } else {
+      console.warn(`[MetadataCollector Warning] ${filePath}: ${message}`);
     }
   }
 

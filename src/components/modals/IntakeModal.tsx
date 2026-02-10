@@ -128,84 +128,119 @@ const EnergyIconL = () => (
 export default function IntakeModal({ isOpen, onClose, onAdd }: IntakeModalProps) {
     const { t } = useTranslation();
     const { showToast, alertnessData, predictedData, intakeRecords, setSimulationParams, sleepData } = useFlowState();
-    const [hoveredDrink, setHoveredDrink] = useState<{ drink: DrinkType; amount: number } | null>(null);
-    const [pendingIntake, setPendingIntake] = useState<{ drink: DrinkType; amount: number } | null>(null);
+
+    // Selection State
+    const [selectedDrink, setSelectedDrink] = useState<{ drink: DrinkType; baseAmount: number; label: string } | null>(null);
+    const [quantity, setQuantity] = useState(1);
+
+    // Alert State
     const [rapidIntakeAlert, setRapidIntakeAlert] = useState<RapidIntakeAlert | null>(null);
 
     // Reset state when modal opens
     useEffect(() => {
         if (!isOpen) {
             setSimulationParams(undefined);
-            setHoveredDrink(null);
-            setPendingIntake(null);
+            setSelectedDrink(null);
+            setQuantity(1);
             setRapidIntakeAlert(null);
         }
     }, [isOpen, setSimulationParams]);
 
-    // ESC key to close
+    // Update simulation when selection/quantity changes
+    useEffect(() => {
+        if (selectedDrink) {
+            setSimulationParams({
+                amount: selectedDrink.baseAmount * quantity,
+                time: getCurrentTimeString()
+            });
+        } else {
+            setSimulationParams(undefined);
+        }
+    }, [selectedDrink, quantity, setSimulationParams]);
+
+    // ESC key to close or go back
     useEffect(() => {
         const handleEsc = (e: KeyboardEvent) => {
             if (e.key === 'Escape' && isOpen) {
-                onClose();
+                if (selectedDrink) {
+                    setSelectedDrink(null);
+                } else {
+                    onClose();
+                }
             }
         };
         document.addEventListener('keydown', handleEsc);
         return () => document.removeEventListener('keydown', handleEsc);
-    }, [isOpen, onClose]);
+    }, [isOpen, onClose, selectedDrink]);
 
     if (!isOpen) return null;
 
-    const handleQuickAdd = (drink: DrinkType, amount: number) => {
+    const handleDrinkClick = (drink: DrinkOption) => {
+        setSelectedDrink({
+            drink: drink.name,
+            baseAmount: drink.defaultMg,
+            label: drink.label
+        });
+        setQuantity(1);
+    };
+
+    const handleConfirm = () => {
+        if (!selectedDrink) return;
+
+        const totalAmount = selectedDrink.baseAmount * quantity;
         const time = getCurrentTimeString();
 
         // Check for rapid intake
-        const alert = checkRapidIntakeWithSimulation(intakeRecords, amount, time);
+        const alert = checkRapidIntakeWithSimulation(intakeRecords, totalAmount, time);
 
         if (alert) {
-            // Show alert dialog
-            setPendingIntake({ drink, amount });
             setRapidIntakeAlert(alert);
         } else {
-            // No alert, proceed with recording
-            onAdd(drink, amount, time);
-            showToast(`${drink} (${amount}mg) ${t('intake.recorded')}`, 'success');
+            // No alert, proceed
+            onAdd(selectedDrink.drink, totalAmount, time);
+            showToast(`${selectedDrink.drink} (${totalAmount}mg) ${t('intake.recorded')}`, 'success');
             onClose();
         }
     };
 
     const handleConfirmWithAlert = () => {
-        if (pendingIntake) {
+        if (selectedDrink) {
+            const totalAmount = selectedDrink.baseAmount * quantity;
             const time = getCurrentTimeString();
-            onAdd(pendingIntake.drink, pendingIntake.amount, time);
-            showToast(`${pendingIntake.drink} (${pendingIntake.amount}mg) ${t('intake.recorded')}`, 'success');
-            setPendingIntake(null);
+            onAdd(selectedDrink.drink, totalAmount, time);
+            showToast(`${selectedDrink.drink} (${totalAmount}mg) ${t('intake.recorded')}`, 'success');
             setRapidIntakeAlert(null);
             onClose();
         }
     };
 
     const handleCancelAlert = () => {
-        setPendingIntake(null);
         setRapidIntakeAlert(null);
     };
 
-    const quickAddWillAffectSleep = hoveredDrink &&
-        willHaveCaffeineAtSleep(hoveredDrink.amount, getCurrentTimeString(), sleepData.lastSleepStart);
+    const handleBack = () => {
+        setSelectedDrink(null);
+        setSimulationParams(undefined);
+    };
+
+    // Calculate details for visualization
+    const currentTotalAmount = selectedDrink ? selectedDrink.baseAmount * quantity : 0;
 
     const getSleepImpactDetails = () => {
-        if (!hoveredDrink) return null;
+        if (!selectedDrink) return null;
 
-        const amount = hoveredDrink.amount;
         const time = getCurrentTimeString();
         const sleepTime = sleepData.lastSleepStart;
 
+        // Check if caffeine remains (>= 25mg)
+        if (!willHaveCaffeineAtSleep(currentTotalAmount, time, sleepTime)) return null;
+
         const [intakeH, intakeM] = time.split(':').map(Number);
         const [sleepH, sleepM] = sleepTime.split(':').map(Number);
-
         let hoursUntilSleep = (sleepH + sleepM / 60) - (intakeH + intakeM / 60);
         if (hoursUntilSleep < 0) hoursUntilSleep += 24;
 
-        const remainingCaffeine = Math.round(estimateCaffeineAtSleep(amount, time, sleepTime));
+        const remainingCaffeine = Math.round(estimateCaffeineAtSleep(currentTotalAmount, time, sleepTime));
 
         return {
             hours: hoursUntilSleep.toFixed(1),
@@ -215,7 +250,6 @@ export default function IntakeModal({ isOpen, onClose, onAdd }: IntakeModalProps
     };
 
     const sleepImpactDetails = getSleepImpactDetails();
-    const showSleepWarning = quickAddWillAffectSleep && sleepImpactDetails;
 
     const renderIcon = (name: string) => {
         switch (name) {
@@ -231,7 +265,7 @@ export default function IntakeModal({ isOpen, onClose, onAdd }: IntakeModalProps
         <div className="modal-overlay" onClick={onClose}>
             <div className="modal-content" onClick={e => e.stopPropagation()}>
                 <div className="modal-header mb-2 sm:mb-4">
-                    <h2 className="modal-title">{t('intake.logCaffeine')}</h2>
+                    <h2 className="modal-title">{selectedDrink ? t(selectedDrink.label) : t('intake.logCaffeine')}</h2>
                     <button onClick={onClose} className="btn-close">
                         <X size={20} />
                     </button>
@@ -246,49 +280,89 @@ export default function IntakeModal({ isOpen, onClose, onAdd }: IntakeModalProps
                     />
                 </div>
 
-                {showSleepWarning && (
-                    <div className="bg-amber-50 border-2 border-amber-200 rounded-2xl p-3 sm:p-4 mb-4 animate-in fade-in slide-in-from-top-2 duration-300">
-                        <div className="flex items-start gap-2 sm:gap-3">
-                            <div className="p-1.5 sm:p-2 bg-amber-100 rounded-full text-amber-600 flex-shrink-0 mt-0.5">
-                                <AlertTriangle size={18} className="sm:w-5 sm:h-5" />
+                {!selectedDrink ? (
+                    /* Step 1: Drink Selection Grid */
+                    <div className="intake-grid animate-in fade-in slide-in-from-bottom-4 duration-300">
+                        {DRINK_OPTIONS.map((drink) => (
+                            <button
+                                key={drink.name}
+                                className="card-soft flex flex-col items-center justify-center gap-3 transition-all duration-200 border-2 border-transparent hover:border-gray-200 hover:shadow-lg hover:scale-[1.03] active:scale-[0.98] active:border-black p-4 h-auto min-h-[140px] group relative overflow-hidden"
+                                onClick={() => handleDrinkClick(drink)}
+                            >
+                                <div className="flex-1 flex items-center justify-center w-full transform group-hover:scale-110 transition-transform duration-300">
+                                    {renderIcon(drink.name)}
+                                </div>
+                                <div className="w-full text-center z-10">
+                                    <p className="font-bold text-sm sm:text-base leading-tight mb-0.5">{t(drink.label)}</p>
+                                    <p className="text-xs text-secondary font-medium">{drink.defaultMg}mg</p>
+                                </div>
+                            </button>
+                        ))}
+                    </div>
+                ) : (
+                    /* Step 2: Quantity & Confirmation */
+                    <div className="flex flex-col gap-6 animate-in fade-in slide-in-from-right-8 duration-300">
+
+                        {/* Top: Icon + Caffeine Viz */}
+                        <div className="flex items-center justify-between px-4">
+                            <div className="transform scale-150 origin-left">
+                                {renderIcon(selectedDrink.drink)}
                             </div>
-                            <div className="flex-1 min-w-0">
-                                <h4 className="font-bold text-xs sm:text-sm text-amber-900 mb-1">
-                                    {t('intake.sleepImpactWarning')}
-                                </h4>
-                                <p className="text-xs sm:text-sm text-amber-800 leading-relaxed">
+                            <div className="text-right">
+                                <span className="text-xs font-bold text-secondary uppercase tracking-wider block mb-1">TOTAL</span>
+                                <div className="flex items-baseline justify-end gap-1">
+                                    <span className="text-5xl font-bold tracking-tighter text-primary">{currentTotalAmount}</span>
+                                    <span className="text-lg text-secondary font-medium">mg</span>
+                                </div>
+                            </div>
+                        </div>
+
+                        {/* Quantity Stepper */}
+                        <div className="flex items-center justify-between bg-subtle rounded-2xl p-2">
+                            <button
+                                onClick={() => setQuantity(q => Math.max(1, q - 1))}
+                                className="w-12 h-12 flex items-center justify-center rounded-xl bg-white shadow-sm hover:shadow-md active:scale-95 transition-all text-primary"
+                            >
+                                <span className="text-2xl font-bold">-</span>
+                            </button>
+                            <span className="text-2xl font-bold text-primary font-mono w-12 text-center">{quantity}</span>
+                            <button
+                                onClick={() => setQuantity(q => Math.min(5, q + 1))}
+                                className="w-12 h-12 flex items-center justify-center rounded-xl bg-white shadow-sm hover:shadow-md active:scale-95 transition-all text-primary"
+                            >
+                                <span className="text-2xl font-bold">+</span>
+                            </button>
+                        </div>
+
+                        {/* Sleep Warning */}
+                        {sleepImpactDetails && (
+                            <div className="bg-amber-50 border border-amber-200 rounded-xl p-3 flex items-start gap-3">
+                                <AlertTriangle size={18} className="text-amber-500 flex-shrink-0 mt-0.5" />
+                                <div className="text-xs sm:text-sm text-amber-800">
+                                    <span className="font-bold block mb-0.5">{t('intake.sleepImpactWarning')}</span>
                                     {t('intake.sleepImpactMessage', sleepImpactDetails)}
-                                </p>
+                                </div>
                             </div>
+                        )}
+
+                        {/* Action Buttons */}
+                        <div className="flex gap-3 mt-2">
+                            <button
+                                onClick={handleBack}
+                                className="flex-1 py-3.5 rounded-xl font-bold text-sm text-secondary hover:bg-subtle transition-colors"
+                            >
+                                {t('back')}
+                            </button>
+                            <button
+                                onClick={handleConfirm}
+                                className="flex-[2] py-3.5 rounded-xl font-bold text-sm bg-black text-white shadow-lg hover:shadow-xl hover:scale-[1.02] active:scale-[0.98] transition-all flex items-center justify-center gap-2"
+                            >
+                                <Coffee size={18} />
+                                {t('add')}
+                            </button>
                         </div>
                     </div>
                 )}
-
-                <div className="intake-grid">
-                    {DRINK_OPTIONS.map((drink) => (
-                        <button
-                            key={drink.name}
-                            className="card-soft flex flex-col items-center justify-center gap-3 transition-all duration-200 border-2 border-transparent hover:border-gray-200 hover:shadow-lg hover:scale-[1.03] active:scale-[0.98] active:border-black p-4 h-auto min-h-[140px] group relative overflow-hidden"
-                            onClick={() => handleQuickAdd(drink.name, drink.defaultMg)}
-                            onMouseEnter={() => {
-                                setSimulationParams({ amount: drink.defaultMg, time: getCurrentTimeString() });
-                                setHoveredDrink({ drink: drink.name, amount: drink.defaultMg });
-                            }}
-                            onMouseLeave={() => {
-                                setSimulationParams(undefined);
-                                setHoveredDrink(null);
-                            }}
-                        >
-                            <div className="flex-1 flex items-center justify-center w-full">
-                                {renderIcon(drink.name)}
-                            </div>
-                            <div className="w-full text-center z-10">
-                                <p className="font-bold text-sm sm:text-base leading-tight mb-0.5">{t(drink.label)}</p>
-                                <p className="text-xs text-secondary font-medium">{drink.defaultMg}mg</p>
-                            </div>
-                        </button>
-                    ))}
-                </div>
             </div>
 
             {/* Rapid Intake Alert Dialog */}
