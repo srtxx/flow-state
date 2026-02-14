@@ -1,8 +1,12 @@
 import { useTranslation } from 'react-i18next';
-import { Clock, Moon, Settings, Coffee, Heart } from 'lucide-react';
+import { Clock, Moon, Settings, Coffee, Heart, Shield, FileText } from 'lucide-react';
 import { useFlowState } from '../context/FlowStateContext';
 
-export default function ProfilePage() {
+interface ProfilePageProps {
+    onShowLegal?: (page: 'privacy' | 'terms') => void;
+}
+
+export default function ProfilePage({ onShowLegal }: ProfilePageProps) {
     const { t } = useTranslation();
     const {
         sleepData,
@@ -137,6 +141,32 @@ export default function ProfilePage() {
                                 </div>
                             </div>
                         </a>
+                    </div>
+
+                    {/* Legal Links */}
+                    <div className="flex flex-col gap-2 mt-2">
+                        <h3 className="text-xs font-bold tracking-widest text-secondary mb-1 px-2 uppercase">{t('legal.section')}</h3>
+                        <button
+                            onClick={() => onShowLegal?.('privacy')}
+                            className="card-soft flex items-center gap-3 p-3.5 hover:bg-subtle transition-colors text-left"
+                        >
+                            <Shield size={16} className="text-secondary flex-shrink-0" />
+                            <span className="text-xs font-medium text-primary">{t('legal.privacy.title')}</span>
+                        </button>
+                        <button
+                            onClick={() => onShowLegal?.('terms')}
+                            className="card-soft flex items-center gap-3 p-3.5 hover:bg-subtle transition-colors text-left"
+                        >
+                            <FileText size={16} className="text-secondary flex-shrink-0" />
+                            <span className="text-xs font-medium text-primary">{t('legal.terms.title')}</span>
+                        </button>
+                    </div>
+
+                    {/* Amazon Associate Disclosure */}
+                    <div className="mt-2 px-2 pb-4">
+                        <p className="text-[9px] text-secondary/40 leading-relaxed text-center">
+                            {t('legal.amazonDisclosure')}
+                        </p>
                     </div>
                 </div>
             </div>

@@ -8,6 +8,7 @@ import AlertnessChart from '../AlertnessChart';
 import RapidIntakeAlertDialog from '../RapidIntakeAlertDialog';
 import { checkRapidIntakeWithSimulation } from '../../lib/alerts';
 import type { RapidIntakeAlert } from '../../types';
+import AffiliateLink from '../AffiliateLink';
 
 interface IntakeModalProps {
     isOpen: boolean;
@@ -267,6 +268,12 @@ export default function IntakeModal({ isOpen, onClose, onAdd }: IntakeModalProps
                                     <Coffee size={18} />
                                     <span>{t('add')}</span>
                                 </button>
+
+                                {/* Amazon Affiliate Link */}
+                                <AffiliateLink
+                                    drinkName={selectedDrink.drink}
+                                    className="mt-3"
+                                />
                             </div>
                         )}
                     </div>

@@ -153,6 +153,21 @@ export function generateAlertnessData(
     // Start from 6:00 instead of wake time
     const startHour = CHART_START_HOUR;
 
+    // Determine chart start time (absolute timestamp)
+    // The chart starts at CHART_START_HOUR (6:00)
+    const chartStartDate = new Date(now);
+    chartStartDate.setHours(CHART_START_HOUR, 0, 0, 0);
+
+    // If it's currently early morning (before 6:00), the "current" chart probably started yesterday at 6:00
+    // But verify the logic: standard practice is usually to show the current calendar day's chart starting at 6am,
+    // or if we consider "day" to start at 6am, then yes, before 6am belongs to verify previous day.
+    // However, the previous logic just took `now` and subtracted 24h for filtering.
+    // Let's assume standard behavior: if now < 6:00, look at previous day's cycle.
+    if (now.getHours() < CHART_START_HOUR) {
+        chartStartDate.setDate(chartStartDate.getDate() - 1);
+    }
+    const chartStartTimestamp = chartStartDate.getTime();
+
     for (let h = 0; h < 24; h += 0.5) {
         const actualHour = (startHour + h) % 24;
         const timeStr = `${String(Math.floor(actualHour)).padStart(2, '0')}:${h % 1 === 0 ? '00' : '30'}`;
@@ -164,14 +179,17 @@ export function generateAlertnessData(
         // Baseline alertness
         const baseline = calculateBaselineAlertness(hoursFromWake, sleepData, actualSleepHours);
 
-        // Calculate caffeine effect from all intake records
+        // Calculate caffeine effect from all intake records using absolute time difference
+        // This fixes the bug where previous day's intake was wrapped around
+
+        // Current point's logic timestamp
+        const pointTimestamp = chartStartTimestamp + (h * 60 * 60 * 1000);
+
         let caffeineEffect = 0;
         recentRecords.forEach(record => {
-            const recordTime = timeToDecimalHours(record.time);
-            // Calculate time since intake considering wrap-around
-            let timeSinceIntake = actualHour - recordTime;
-            if (timeSinceIntake < -12) timeSinceIntake += 24;
-            if (timeSinceIntake > 12) timeSinceIntake -= 24;
+            // Calculate difference in hours
+            const diffInMs = pointTimestamp - record.timestamp;
+            const timeSinceIntake = diffInMs / (1000 * 60 * 60);
 
             if (timeSinceIntake >= 0) {
                 caffeineEffect += calculateCaffeineEffect(record.amount, timeSinceIntake);
@@ -180,9 +198,19 @@ export function generateAlertnessData(
 
         // Add additional intake if simulating
         if (additionalIntake) {
+            // Predict its timestamp based on its time string relative to chart start
+            // We assume the additional intake is for "today" (the chart's day)
+            // Need to map additionalIntake.time to a timestamp within [chartStart, chartEnd]
             const addTime = timeToDecimalHours(additionalIntake.time);
-            let timeSinceAdd = actualHour - addTime;
-            if (timeSinceAdd < -12) timeSinceAdd += 24;
+
+            // Calculate offset from chart start hour
+            let offsetFromStart = addTime - CHART_START_HOUR;
+            if (offsetFromStart < 0) offsetFromStart += 24; // Handle wrap (e.g. 01:00 is 19 hours after 06:00)
+
+            const addTimestamp = chartStartTimestamp + (offsetFromStart * 60 * 60 * 1000);
+            const diffInMs = pointTimestamp - addTimestamp;
+            const timeSinceAdd = diffInMs / (1000 * 60 * 60);
+
             if (timeSinceAdd >= 0) {
                 caffeineEffect += calculateCaffeineEffect(additionalIntake.amount, timeSinceAdd);
             }

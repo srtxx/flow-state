@@ -2,6 +2,7 @@ import { useTranslation } from 'react-i18next';
 import { Trash2, Coffee, PlusCircle } from 'lucide-react';
 import { useFlowState } from '../context/FlowStateContext';
 import { DRINK_OPTIONS } from '../lib/caffeine';
+import AdBanner from '../components/AdBanner';
 import './JournalPage.css';
 
 export default function JournalPage() {
@@ -44,7 +45,7 @@ export default function JournalPage() {
 
             <div className="section mb-20 px-1">
                 <h3 className="text-sm font-bold tracking-widest mb-4 px-1 uppercase text-secondary">{t('journal.history')}</h3>
-                <div className="relative pl-6 sm:pl-8 ml-3 sm:ml-4 space-y-8 sm:space-y-10 my-8 journal-timeline">
+                <div className={`relative pl-6 sm:pl-8 ml-3 sm:ml-4 space-y-8 sm:space-y-10 my-8 ${sortedRecords.length > 0 ? 'journal-timeline' : ''}`}>
                     {sortedRecords.length === 0 ? (
                         <div className="flex flex-col items-center justify-center py-12 text-center animate-in fade-in duration-500">
                             <div className="w-20 h-20 bg-subtle rounded-full flex items-center justify-center mb-6 shadow-sm border border-white/5">
@@ -96,6 +97,13 @@ export default function JournalPage() {
                     )}
                 </div>
             </div>
+
+            {/* Sponsored Ad - after timeline, before bottom nav */}
+            {sortedRecords.length > 0 && (
+                <div className="px-4 mb-20">
+                    <AdBanner slot="1234567890" format="horizontal" />
+                </div>
+            )}
         </div>
     );
 }

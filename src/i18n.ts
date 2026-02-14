@@ -67,10 +67,10 @@ const resources = {
                 sleepImpactMessage: '就寝時刻（{{sleepTime}}）まで{{hours}}時間。約{{amount}}mgのカフェインが体内に残ります。',
                 acknowledgeImpact: '影響を理解しました',
                 drinks: {
-                    coffeeS: 'コーヒーS',
-                    coffeeL: 'コーヒーL',
-                    energyS: 'エナジードリンクS',
-                    energyL: 'エナジードリンクL'
+                    coffeeS: 'コーヒー S',
+                    coffeeL: 'コーヒー L',
+                    energyS: 'エナジー S',
+                    energyL: 'エナジー L'
                 }
             },
 
@@ -191,6 +191,46 @@ const resources = {
                     },
                     understandAndRecord: '理解して記録',
                     cancelRecord: 'キャンセル'
+                }
+            },
+
+            // Ads
+            ad: {
+                amazonPartner: 'Amazon で購入',
+                saleBadge: 'SALE',
+            },
+
+            // Legal
+            legal: {
+                section: '法的情報',
+                back: '戻る',
+                lastUpdated: '最終更新日',
+                amazonDisclosure: '当サイトは Amazon.co.jp アソシエイト・プログラムの参加者です。リンクを通じて購入された場合、紹介料を受け取ることがあります。',
+                privacy: {
+                    title: 'プライバシーポリシー',
+                    aboutApp: 'アプリについて',
+                    aboutAppBody: 'FLOW STATE は、カフェイン摂取量の管理と覚醒度の最適化を支援するウェブアプリケーションです。',
+                    dataCollection: 'データの収集と保存',
+                    dataCollectionBody: '本アプリは、入力されたカフェイン摂取データおよび睡眠データをお使いのブラウザのローカルストレージに保存します。サーバーへのデータ送信は行いません。',
+                    cookies: 'Cookie の使用',
+                    cookiesBody: '本アプリは広告の配信および利用状況の分析のために Cookie を使用する場合があります。Google AdSense は Cookie を使用してユーザーの興味に基づいた広告を表示します。',
+                    ads: 'Google AdSense について',
+                    adsBody: '本アプリは Google AdSense を利用し、第三者広告を表示する場合があります。Google は以前のアクセス情報に基づき、適切な広告を表示するために Cookie を使用します。Google のプライバシーポリシーの詳細は https://policies.google.com/privacy をご覧ください。',
+                    amazon: 'Amazon アソシエイトについて',
+                    amazonBody: '本アプリは Amazon.co.jp アソシエイト・プログラムに参加しています。商品リンクを通じて購入された場合、当サイトは紹介料を受け取ることがあります。',
+                    contact: 'お問い合わせ',
+                    contactBody: 'プライバシーに関するお問い合わせは、アプリ内のサポート機能をご利用ください。'
+                },
+                terms: {
+                    title: '利用規約',
+                    usage: 'サービスの利用',
+                    usageBody: 'FLOW STATE は、カフェイン摂取量の管理ツールとして提供されます。本アプリの利用は無料ですが、一部機能にはプレミアムプランが必要になる場合があります。',
+                    disclaimer: '免責事項',
+                    disclaimerBody: '本アプリが提供する情報（覚醒度の推定、睡眠への影響予測など）は一般的なガイダンスであり、医学的なアドバイスではありません。健康上の懸念がある場合は医療専門家にご相談ください。',
+                    ip: '知的財産権',
+                    ipBody: 'FLOW STATE のデザイン、コンテンツ、ソースコードに関する知的財産権は開発者に帰属します。無断での複製・転載・再配布を禁じます。',
+                    changes: '規約の変更',
+                    changesBody: '本規約は予告なく変更される場合があります。変更後も本アプリを継続してご利用された場合、変更後の規約に同意したものとみなされます。'
                 }
             }
         }
@@ -354,6 +394,46 @@ const resources = {
                     },
                     understandAndRecord: 'I Understand, Record',
                     cancelRecord: 'Cancel'
+                }
+            },
+
+            // Ads
+            ad: {
+                amazonPartner: 'Buy on Amazon',
+                saleBadge: 'SALE',
+            },
+
+            // Legal
+            legal: {
+                section: 'Legal',
+                back: 'Back',
+                lastUpdated: 'Last Updated',
+                amazonDisclosure: 'This site participates in the Amazon.co.jp Associates Program. We may earn commissions from purchases made through our links.',
+                privacy: {
+                    title: 'Privacy Policy',
+                    aboutApp: 'About This App',
+                    aboutAppBody: 'FLOW STATE is a web application that helps manage caffeine intake and optimize alertness levels.',
+                    dataCollection: 'Data Collection & Storage',
+                    dataCollectionBody: 'This app stores caffeine intake and sleep data in your browser\'s local storage. No data is sent to external servers.',
+                    cookies: 'Use of Cookies',
+                    cookiesBody: 'This app may use cookies for advertising and usage analysis. Google AdSense uses cookies to display ads based on user interests.',
+                    ads: 'About Google AdSense',
+                    adsBody: 'This app may display third-party ads via Google AdSense. Google uses cookies based on previous access to display relevant ads. Visit https://policies.google.com/privacy for details.',
+                    amazon: 'About Amazon Associates',
+                    amazonBody: 'This app participates in the Amazon.co.jp Associates Program. We may earn commissions from purchases made through product links.',
+                    contact: 'Contact',
+                    contactBody: 'For privacy-related inquiries, please use the in-app support feature.'
+                },
+                terms: {
+                    title: 'Terms of Service',
+                    usage: 'Service Usage',
+                    usageBody: 'FLOW STATE is provided as a caffeine intake management tool. Usage is free, though some features may require a premium plan.',
+                    disclaimer: 'Disclaimer',
+                    disclaimerBody: 'Information provided by this app (alertness estimates, sleep impact predictions, etc.) is general guidance and not medical advice. Consult a healthcare professional with any health concerns.',
+                    ip: 'Intellectual Property',
+                    ipBody: 'All intellectual property rights for FLOW STATE design, content, and source code belong to the developer. Unauthorized reproduction, reprinting, or redistribution is prohibited.',
+                    changes: 'Changes to Terms',
+                    changesBody: 'These terms may be changed without prior notice. Continued use of the app after changes constitutes acceptance of the new terms.'
                 }
             }
         }

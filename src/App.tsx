@@ -1,5 +1,7 @@
+import { useState } from 'react';
 import { Layout, SleepInputModal, OnboardingModal, IntakeModal, ToastContainer, BuyMeACoffeeWidget, ConfirmDialog } from './components';
 import { DashboardPage, JournalPage, ProfilePage } from './pages';
+import { PrivacyPolicyPage, TermsPage } from './pages/LegalPages';
 import { FlowStateProvider, useFlowState } from './context/FlowStateContext';
 import './App.css';
 
@@ -23,15 +25,25 @@ function AppContent() {
     closeConfirm
   } = useFlowState();
 
+  const [legalPage, setLegalPage] = useState<'privacy' | 'terms' | null>(null);
+
   // Render current page based on active tab
   const renderPage = () => {
+    // Show legal pages if requested
+    if (legalPage === 'privacy') {
+      return <PrivacyPolicyPage onBack={() => setLegalPage(null)} />;
+    }
+    if (legalPage === 'terms') {
+      return <TermsPage onBack={() => setLegalPage(null)} />;
+    }
+
     switch (activeTab) {
       case 'dashboard':
         return <DashboardPage />;
       case 'journal':
         return <JournalPage />;
       case 'profile':
-        return <ProfilePage />;
+        return <ProfilePage onShowLegal={(page) => setLegalPage(page)} />;
       default:
         return null;
     }
@@ -41,7 +53,10 @@ function AppContent() {
     <>
       <Layout
         activeTab={activeTab}
-        onTabChange={setActiveTab}
+        onTabChange={(tab) => {
+          setLegalPage(null);
+          setActiveTab(tab);
+        }}
         actualSleepHours={actualSleepHours}
         onSleepClick={() => setShowSleepInput(true)}
       >
@@ -94,3 +109,4 @@ function App() {
 }
 
 export default App;
+
