@@ -49,7 +49,7 @@ export default function OnboardingModal({ isOpen, onComplete }: OnboardingModalP
                             </div>
                         </div>
                         <button
-                            className="w-full bg-white text-black py-3.5 sm:py-4 rounded-2xl font-bold mt-6 sm:mt-8 flex items-center justify-center gap-2 hover:scale-[1.02] transition-transform text-sm sm:text-base shadow-lg hover:shadow-white/20"
+                            className="btn-primary mt-6 sm:mt-8"
                             onClick={() => setStep(2)}
                         >
                             {t('onboarding.getStarted')} <ArrowRight size={16} className="sm:w-[18px] sm:h-[18px]" />
@@ -91,7 +91,7 @@ export default function OnboardingModal({ isOpen, onComplete }: OnboardingModalP
                         </div>
 
                         <button
-                            className="w-full bg-white text-black py-3.5 sm:py-4 rounded-2xl font-bold mt-3 sm:mt-4 text-sm sm:text-base shadow-lg hover:shadow-white/20 hover:scale-[1.02] transition-transform"
+                            className="btn-primary mt-3 sm:mt-4"
                             onClick={handleComplete}
                         >
                             {t('onboarding.start')}

@@ -127,13 +127,13 @@ export default function SleepInputModal({ isOpen, onClose, sleepData, onSave }: 
                     <div className="flex gap-3 mt-2 sm:mt-4">
                         <button
                             onClick={onClose}
-                            className="flex-1 py-3.5 rounded-xl font-bold text-sm text-secondary hover:bg-subtle transition-colors"
+                            className="btn-secondary flex-1"
                         >
                             {t('cancel')}
                         </button>
                         <button
                             onClick={handleSave}
-                            className="flex-[2] py-3.5 rounded-xl font-bold text-sm bg-white text-black shadow-lg hover:bg-gray-100 hover:shadow-xl hover:scale-[1.02] active:scale-[0.98] transition-all flex items-center justify-center gap-2"
+                            className="btn-primary flex-[2]"
                         >
                             {t('save')}
                         </button>

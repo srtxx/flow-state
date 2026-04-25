@@ -72,6 +72,8 @@ export default function DashboardPage() {
 
     return (
         <div className="dashboard-page pb-24 space-y-4 sm:space-y-6">
+            <h1 className="sr-only">カフェインの摂取量最適化アプリ FLOW STATE ダッシュボード</h1>
+            
             {/* Header: Score & Status */}
             <div className="flex flex-wrap items-end justify-between px-4 pt-4 sm:pt-6 gap-y-4">
                 <div>

@@ -263,7 +263,7 @@ export default function IntakeModal({ isOpen, onClose, onAdd }: IntakeModalProps
                                 {/* Add Button */}
                                 <button
                                     onClick={handleConfirm}
-                                    className="w-full py-3 rounded-xl font-bold text-sm bg-white text-black shadow-lg hover:bg-gray-100 hover:scale-[1.01] active:scale-[0.98] transition-all flex items-center justify-center gap-2"
+                                    className="btn-primary"
                                 >
                                     <Coffee size={18} />
                                     <span>{t('add')}</span>
