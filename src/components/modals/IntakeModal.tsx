@@ -184,7 +184,7 @@ export default function IntakeModal({ isOpen, onClose, onAdd }: IntakeModalProps
 
     return (
         <div className="modal-overlay" onClick={onClose}>
-            <div className="modal-content w-full max-w-md bg-card border border-white/10 rounded-3xl p-4 sm:p-6 shadow-2xl transform transition-all max-h-[90vh] overflow-y-auto" onClick={e => e.stopPropagation()}>
+            <div className="modal-content w-full max-w-md bg-card border border-white/10 rounded-3xl p-4 sm:p-6 shadow-2xl transform transition-all max-h-[95vh] overflow-y-auto" onClick={e => e.stopPropagation()}>
                 <div className="modal-header mb-2 flex items-center justify-between">
                     <h2 className="modal-title text-lg font-bold text-primary">{t('intake.logCaffeine')}</h2>
                     <button onClick={onClose} className="btn-close p-2 bg-subtle rounded-full hover:bg-white/10 transition-colors text-primary">
@@ -235,7 +235,7 @@ export default function IntakeModal({ isOpen, onClose, onAdd }: IntakeModalProps
                     </div>
 
                     {/* Expandable Action Panel - Shows when a drink is selected */}
-                    <div className={`transition-all duration-300 ease-in-out overflow-hidden ${selectedDrink ? 'max-h-[300px] opacity-100' : 'max-h-0 opacity-0'}`}>
+                    <div className={`transition-all duration-300 ease-in-out overflow-hidden ${selectedDrink ? 'max-h-[420px] opacity-100' : 'max-h-0 opacity-0'}`}>
                         {selectedDrink && (
                             <div className="bg-subtle/50 rounded-2xl p-4 border border-white/10 animate-in slide-in-from-top-2 fade-in duration-200">
                                 {/* Details Header */}
